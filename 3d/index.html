@@ -24,7 +24,7 @@
            font-family:'Belvina', "Courier New", monospace; }
   #intro h1 { color:#fff; font-size:clamp(30px,6.5vw,60px); letter-spacing:2px; margin:0 0 18px;
               font-weight:normal; line-height:1.15; max-width:16em; padding:0 20px; }
-  #intro .enter { color:#fff; font-size:clamp(16px,3vw,24px); animation:pulse 1.6s infinite; }
+  #intro .enter { color:#fff; font-size:clamp(20px,3.7vw,30px); animation:pulse 1.6s infinite; }
   #intro .ctrl  { color:rgba(255,255,255,.7); font-size:clamp(11px,2.2vw,15px); margin-top:22px;
                   background:rgba(255,255,255,.07); padding:8px 16px; border-radius:8px;
                   max-width:44em; }
@@ -666,10 +666,10 @@ canvas.addEventListener('touchend', (e) => {
    ÉCRAN D'ACCUEIL + overlays
    ===================================================================== */
 document.getElementById('intro-titre').textContent = TITRE_PORTFOLIO;
-document.getElementById('intro-enter').textContent = IS_MOBILE ? '▶ Touchez pour entrer' : '▶ Cliquez pour entrer';
+document.getElementById('intro-enter').textContent = IS_MOBILE ? 'Touchez pour entrer' : 'Cliquez pour entrer';
 document.getElementById('intro-ctrl').textContent = IS_MOBILE
   ? 'Joystick pour marcher · glissez pour regarder · boutons en haut pour sauter'
-  : 'Z avancer · X reculer · Q et D sur les côtés (ou les flèches) · souris pour regarder · Espace pour sauter · Échap pour la pause';
+  : 'Z avancer · X reculer · Q et D sur les côtés (ou les flèches) · souris pour regarder · Espace pour sauter · Échap pour mettre pause';
 
 elIntro.addEventListener('click', () => {
   demarre = true;
