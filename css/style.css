@@ -52,9 +52,10 @@
       text-align:center;color:#fff;font-family:'Belvina',"Courier New",monospace;padding:0 6%}
     .accueil3d-titre{font-size:clamp(20px,2.4vw,38px);letter-spacing:2px;line-height:1.15;
       max-width:13em;margin:0 0 18px}
-    .accueil3d-enter{font-size:clamp(12px,1.4vw,18px);animation:pulse3d 1.6s infinite}
+    .accueil3d-enter{font-size:clamp(15px,1.9vw,24px);animation:pulse3d 1.6s infinite}
     .accueil3d-ctrl{color:rgba(255,255,255,.7);font-size:clamp(9px,1vw,13px);margin-top:18px;
       background:rgba(255,255,255,.07);padding:8px 16px;border-radius:8px;max-width:30em}
+    .accueil3d-note{margin-top:14px;font-size:clamp(9px,1vw,13px);color:rgba(255,255,255,.45)}
     @keyframes pulse3d{0%,100%{opacity:1}50%{opacity:.45}}
     .bloc3d:hover .accueil3d-titre{opacity:.7;transition:opacity .4s ease-out}
     .accueil3d-mobile{display:none}
@@ -154,8 +155,9 @@
     .accueil3d-desktop{display:none}
     .accueil3d-mobile{display:block}
     .accueil3d-titre{font-size:clamp(22px,6vw,34px);max-width:12em}
-    .accueil3d-enter{font-size:clamp(14px,3.4vw,20px)}
+    .accueil3d-enter{font-size:clamp(17px,4.2vw,26px)}
     .accueil3d-ctrl{font-size:clamp(10px,2.6vw,14px);max-width:22em}
+    .accueil3d-note{font-size:clamp(10px,2.4vw,13px)}
 
     /* Supprimer block4 et block5 en mobile */
     .block:nth-child(4), .block:nth-child(5) {display: none !important;}
