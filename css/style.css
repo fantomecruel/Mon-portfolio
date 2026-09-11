@@ -55,7 +55,7 @@
     .accueil3d-enter{font-size:clamp(15px,1.9vw,24px);animation:pulse3d 1.6s infinite}
     .accueil3d-ctrl{color:rgba(255,255,255,.7);font-size:clamp(9px,1vw,13px);margin-top:18px;
       background:rgba(255,255,255,.07);padding:8px 16px;border-radius:8px;max-width:30em}
-    .accueil3d-note{margin-top:14px;font-size:clamp(9px,1vw,13px);color:rgba(255,255,255,.45)}
+    .accueil3d-note{margin-top:14px;font-size:clamp(9px,1vw,13px);color:#e05555}
     @keyframes pulse3d{0%,100%{opacity:1}50%{opacity:.45}}
     .bloc3d:hover .accueil3d-titre{opacity:.7;transition:opacity .4s ease-out}
     .accueil3d-mobile{display:none}

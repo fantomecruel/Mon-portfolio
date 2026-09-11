@@ -25,7 +25,7 @@
   #intro h1 { color:#fff; font-size:clamp(30px,6.5vw,60px); letter-spacing:2px; margin:0 0 18px;
               font-weight:normal; line-height:1.15; max-width:16em; padding:0 20px; }
   #intro .enter { color:#fff; font-size:clamp(20px,3.7vw,30px); animation:pulse 1.6s infinite; }
-  #intro .note  { color:rgba(255,255,255,.45); font-size:clamp(10px,1.8vw,13px); margin-top:16px; }
+  #intro .note  { color:#e05555; font-size:clamp(10px,1.8vw,13px); margin-top:16px; }
   #intro .ctrl  { color:rgba(255,255,255,.7); font-size:clamp(11px,2.2vw,15px); margin-top:22px;
                   background:rgba(255,255,255,.07); padding:8px 16px; border-radius:8px;
                   max-width:44em; }
@@ -247,6 +247,43 @@ let VITESSE_ANIMATIONS = 1.0;   // 1 = vitesse du .blend · 0.5 = moitié moins 
 let LUMIERE_POOLROOMS = 0.3;   // les lampes situées DANS la salle
 let EMISSIF_POOLROOMS = 2.0;   // les matériaux qui ne servent QUE dans la salle
 const ZONE_POOLROOMS = { x: [36, 103], y: [-12, 13.5], z: [-11.5, 24] };
+
+/* ---------- L'EAU DES POOLROOMS ----------
+   Dans Blender l'eau paraît bleue par REFLET : `water2` est un vert d'eau
+   (73cca5) quasi miroir qui renvoie le ciel. three.js r128 n'a aucun
+   environnement à réfléchir, il ne reste que la couleur de base.
+
+   ⚠️ Mesuré le 11 septembre : avec un matériau ÉCLAIRÉ, ni la couleur ni
+   l'émission n'atteignent l'écran — le bassin ne reçoit presque aucune lumière,
+   et seule l'opacité fait bouger un pixel. L'eau rend donc gris-noir quoi qu'on
+   règle. On lui substitue un `MeshBasicMaterial`, qui ignore l'éclairage, avec
+   `toneMapped = false` pour que l'exposition à 0,10 ne l'écrase pas.
+   L'original Blender est conservé : __debug.eau(null) le restitue.
+
+   Trois réglages indépendants :
+     COULEUR    la teinte pure
+     OPACITE    combien elle couvre le carrelage du fond (0 = invisible)
+     LUMINOSITE un multiplicateur sur la teinte. Le tone mapping étant
+                désactivé ici, au-delà de 1 les valeurs saturent vers le blanc.
+   Essai à chaud : __debug.eau('#2a8f8a', 0.45, 1)                          */
+let COULEUR_EAU    = 0x2a8f8a;   // turquoise ; null = matériau Blender d'origine
+let OPACITE_EAU    = 0.45;       // plus bas = eau plus discrète
+let LUMINOSITE_EAU = 0.2;          // 0,5 = deux fois plus sombre · 1,5 = plus lumineuse
+const eaux = [];              // { mesh, origine, teinte }
+const estEau = (o, m) => /^eau/i.test(o.name || '') || /^water/i.test((m && m.name) || '');
+
+function appliquerEau() {
+  eaux.forEach(({ mesh, origine, teinte }) => {
+    if (COULEUR_EAU === null) { mesh.material = origine; return; }
+    teinte.color.setHex(COULEUR_EAU).multiplyScalar(LUMINOSITE_EAU);
+    teinte.opacity = OPACITE_EAU;
+    teinte.needsUpdate = true;
+    mesh.material = teinte;
+  });
+  return { couleur: COULEUR_EAU === null ? 'origine Blender'
+                  : '#' + COULEUR_EAU.toString(16).padStart(6, '0'),
+           opacite: OPACITE_EAU, luminosite: LUMINOSITE_EAU, nappes: eaux.length };
+}
 
 /* --------- LE REQUIN ---------
    Plus rien à régler ici : depuis le 11 septembre 2026 tout se passe dans le
@@ -854,6 +891,7 @@ function appliquerModeLumiere() {
   hemi.color.set((emissif || plat) ? 0xd9e3ea : LUMIERE_AMBIANTE_HAUT);
   hemi.groundColor.set((emissif || plat) ? 0x3b4145 : LUMIERE_AMBIANTE_BAS);
   renderer.toneMappingExposure = plat ? 0.9 : (emissif ? 0.82 : EXPO_LUMIERE);
+  appliquerEau();   // la teinte de l'eau se pose par-dessus, quel que soit le mode
 }
 
 /* ---------- grain PS1 : tremblement des sommets + textures affines ---------- */
@@ -996,6 +1034,19 @@ function monterMondeGLB(gltf) {
         o.material = Array.isArray(o.material) ? o.material.map((m) => (m ? m.clone() : m))
                                                : o.material.clone();
       }
+      // L'eau : on lui prépare un matériau NON ÉCLAIRÉ (voir le bloc en tête).
+      // L'original est gardé de côté, jamais modifié.
+      const objetEau = !objetPlafond && o.material &&
+        estEau(o, Array.isArray(o.material) ? o.material[0] : o.material);
+      if (objetEau) {
+        const src = Array.isArray(o.material) ? o.material[0] : o.material;
+        const teinte = new THREE.MeshBasicMaterial({
+          transparent: true, opacity: src.opacity, depthWrite: false,
+          side: THREE.DoubleSide, toneMapped: false,
+        });
+        appliquerGrainPS1(teinte);     // même tremblement que le reste du monde
+        eaux.push({ mesh: o, origine: o.material, teinte });
+      }
       // on garde les matériaux et textures EXACTEMENT comme exportés par
       // Blender (rendu par pixel, couleurs sRGB) — fidèle au viewport
       if (o.material) {
@@ -1014,6 +1065,7 @@ function monterMondeGLB(gltf) {
           if (liste.indexOf(mm) < 0) liste.push(mm);
           return;
         }
+        if (objetEau) return;   // l'eau ne suit ni les lampes ni les ciels
         const lum = mm.emissive && (mm.emissive.r + mm.emissive.g + mm.emissive.b) > 0.01;
         if ((lum || mm.emissiveMap) && matsEmissifs.indexOf(mm) < 0) matsEmissifs.push(mm);
       });
@@ -1103,6 +1155,15 @@ window.__debug = { joueur, camera, scene, renderer,
   get mondeGLB() { return mondeGLB; },
   get fumee() { return groupeFumee; },
   lumiere(mode) { MODE_LUMIERE = mode; appliquerModeLumiere(); return mode; },
+  // teinte de l'eau à chaud : __debug.eau('#2f86c5', 0.55)
+  // __debug.eau(null) restitue le matériau Blender d'origine
+  eau(couleur, opacite, luminosite) {
+    if (couleur === null) COULEUR_EAU = null;
+    else if (couleur !== undefined) COULEUR_EAU = new THREE.Color(couleur).getHex();
+    if (opacite !== undefined) OPACITE_EAU = opacite;
+    if (luminosite !== undefined) LUMINOSITE_EAU = luminosite;
+    return appliquerEau();
+  },
   // réglages de lumière à chaud, sans recharger la page
   expo(v)     { EXPO_LUMIERE = v;     appliquerModeLumiere(); return v; },
   ambiante(v) { AMBIANTE_LUMIERE = v; appliquerModeLumiere(); return v; },
