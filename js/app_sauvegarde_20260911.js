@@ -7,16 +7,15 @@ const { createApp, nextTick } = Vue;
 createApp({
   data(){
     return {
-      allowedBlocks: new Set([0,1,2]),
+      allowedBlocks: new Set([0,1,2,5]),
       activeBlock: null,
       overlayStyle: {},
 
       // états d’affichage
       showSlider: false,        // (désormais inutilisé mais conservé)
       showBlock2Grid: false,
-      showPdfContent: false,    // (désormais inutilisé mais conservé)
+      showPdfContent: false,
       showPhotoPdf: false,
-      show3d: false,            // iframe du portfolio 3D
 
       // anciennes données slider (conservées pour stabilité)
       desktopImages: [
@@ -47,12 +46,6 @@ createApp({
     const check = () => { this.isMobile = window.innerWidth < 768 }
     check();
     window.addEventListener('resize', check);
-
-    // La page 3D tourne en iframe : son bouton « ↩ retour » nous prévient
-    // au lieu de faire history.back(), qui ne sortirait pas de l'iframe.
-    window.addEventListener('message', (e) => {
-      if (e.data === 'fermer-3d' && this.show3d) this.closeOverlay();
-    });
   },
 
   methods:{
@@ -63,16 +56,13 @@ createApp({
 
     openOverlay(index, event){
 
-      // Sur mobile, le PDF photographie s'ouvre dans un onglet externe
-      if (index === 0 && isMobileLike()) {
-        window.open('photos/photographies.pdf', '_blank');
-        return;
-      }
-
-      // Sur mobile, la 3D prend tout l'écran : navigation dans le même onglet,
-      // son bouton « ↩ retour » (history.back) ramène ici tout seul.
-      if (index === 2 && isMobileLike()) {
-        window.location.href = '3d/index.html';
+      // PDFs → sur mobile : ouverture dans un onglet externe
+      if ((index === 0 || index === 2 || index === 5) && isMobileLike()) {
+        const url =
+          index === 0 ? 'photos/photographies.pdf'
+          : index === 2 ? 'photos/graphisme.pdf'
+          : 'photos/graphismedecor.pdf';
+        window.open(url, '_blank');
         return;
       }
 
@@ -84,14 +74,10 @@ createApp({
       this.showBlock2Grid = false;
       this.showPdfContent = false;
       this.showPhotoPdf = false;
-      this.show3d = false;
 
       // fond initial pour l’animation
       let background = 'var(--cream)';
       let backgroundSize = 'auto';
-
-      // noir pour la 3D : l'agrandissement enchaîne sans flash clair
-      if (index === 2) background = '#000';
 
       if (index === 1) {
         background = "url('photos/a.svg') no-repeat center, var(--cream)";
@@ -131,9 +117,9 @@ createApp({
             }, delay);
           }
 
-          if (index === 2) {
-            setTimeout(() => {
-              this.show3d = true;
+          if (index === 2 || index === 5) {
+            setTimeout(() => { 
+              this.showPdfContent = true; 
             }, delay);
           }
 
@@ -152,8 +138,6 @@ createApp({
       this.showSlider = false;
       this.showPdfContent = false;
       this.showPhotoPdf = false;
-      // démonte l'iframe : libère le contexte WebGL et les 16 Mo du monde
-      this.show3d = false;
 
       const { rect, index } = this.activeBlock;
       const newBgSize = index === 1 ? `${rect.width}px ${rect.height}px` : 'auto';

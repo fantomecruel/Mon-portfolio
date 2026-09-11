@@ -11,17 +11,12 @@
     -------------------------------------- */
     @font-face{font-family:'Megants';src:url('../fonts/Megants.otf') format('opentype')}
     @font-face{font-family:'Minion';src:url('../fonts/MinionProSemiboldDisplay.otf') format('opentype')}
-    /* Police de l'écran d'accueil 3D : la même que dans 3d/index.html, pour que
-       le bloc et la page plein écran soient identiques. */
-    @font-face{font-family:'Belvina';src:url('../3d/CSBelvina-Regular_demo-BF669f0fb63ba84.otf') format('opentype');font-weight:normal;font-style:normal;font-display:swap}
     
     /* ======== GRID LAYOUT ======== */
     .container{
       display:grid;
       grid-template-columns:50% 25% 25%;
-      /* la moitié droite se partage 2/3 pour la 3D, 1/3 pour le nom.
-         La colonne photographie est en grid-row:1/3, elle n'est pas concernée. */
-      grid-template-rows:62% 38%;
+      grid-template-rows:50% 50%;
       width:100vw;height:100vh;position:relative
     }
 
@@ -36,28 +31,14 @@
     .titrephoto-mobile{display:none;width:44vw}
     .block:nth-child(1) h2{font-family:'Megants',sans-serif;text-transform:uppercase;font-size:1.3rem}
 
-    /* Bloc 3 : Portfolio 3D → toute la bande haut de la moitié droite
-       (anciennement Graphisme en 2/3 + Graphisme décor en 3/4) */
+    /* Bloc 3 : Graphisme → haut gauche de la moitié droite */
     .block:nth-child(3) {
-    grid-column: 2 / 4;
+    grid-column: 2 / 3;
     grid-row: 1 / 2;
     position: relative; /* nécessaire pour centrer le titre */
     display: flex;
     justify-content: center;
     align-items: center;}
-
-    /* --- Réplique de l'écran d'accueil de 3d/index.html --- */
-    .bloc3d{background:#000!important;cursor:pointer}
-    .accueil3d{display:flex;flex-direction:column;align-items:center;justify-content:center;
-      text-align:center;color:#fff;font-family:'Belvina',"Courier New",monospace;padding:0 6%}
-    .accueil3d-titre{font-size:clamp(20px,2.4vw,38px);letter-spacing:2px;line-height:1.15;
-      max-width:13em;margin:0 0 18px}
-    .accueil3d-enter{font-size:clamp(12px,1.4vw,18px);animation:pulse3d 1.6s infinite}
-    .accueil3d-ctrl{color:rgba(255,255,255,.7);font-size:clamp(9px,1vw,13px);margin-top:18px;
-      background:rgba(255,255,255,.07);padding:8px 16px;border-radius:8px;max-width:30em}
-    @keyframes pulse3d{0%,100%{opacity:1}50%{opacity:.45}}
-    .bloc3d:hover .accueil3d-titre{opacity:.7;transition:opacity .4s ease-out}
-    .accueil3d-mobile{display:none}
 
     /* Titre invisible pour SEO */
     .block:nth-child(3) h2, .block:nth-child(6) h2  {
@@ -75,8 +56,8 @@
     .titregraphisme-mobile{display:none;width:44vw}
 
 
-    /* Block 6: absorbé par le bloc 3D — masqué, comme les blocs 4 et 5 */
-    .block:nth-child(6){display:none}
+    /* Block 6: Graphisme décor (haut droit droite) */
+    .block:nth-child(6){grid-column:3/4;grid-row:1/2;background:url('../photos/rayures.svg') no-repeat center/cover,var(--cream);}
     .graphismedecor { pointer-events: auto;width:10vw;height:auto;z-index:2;transition: all 0.5s ease-out;}
     .graphismedecor:hover {filter: drop-shadow(2px 2px 0px #597ef7);}
 
@@ -121,11 +102,6 @@
 
     /* PDF */
     .pdf-container{position:relative;width:100%;height:100%;margin:auto;background:#fff}
-
-    /* Portfolio 3D plein écran : fond noir pour enchaîner sans flash blanc
-       sur l'écran d'accueil de la page 3D. */
-    .conteneur3d{background:#000}
-    .iframe3d{width:100%;height:100%;border:0;display:block}
     .btn-close{position:absolute;top:40px;left:10px;z-index:10;background:red;color:#fff;border:none;border-radius:5px;padding:5px 10px;cursor:pointer}
 
 
@@ -144,18 +120,11 @@
     @media (max-width:767px){
       html,body{overflow-y:auto}
       .block {background-color: var(--cream) !important;}
-      .container{grid-template-columns:1fr;grid-template-rows:repeat(3,1fr);grid-template-areas:'block2' 'block1' 'block3'}
+      .container{grid-template-columns:1fr;grid-template-rows:repeat(4,1fr);grid-template-areas:'block2' 'block1' 'block6' 'block3'}
       .block:nth-child(1){grid-area:block1}
       .block:nth-child(2){grid-area:block2}
       .block:nth-child(3){grid-area:block3}
-
-    /* Écran d'accueil 3D : consignes tactiles à la place des consignes clavier */
-    .bloc3d{background:#000!important}
-    .accueil3d-desktop{display:none}
-    .accueil3d-mobile{display:block}
-    .accueil3d-titre{font-size:clamp(22px,6vw,34px);max-width:12em}
-    .accueil3d-enter{font-size:clamp(14px,3.4vw,20px)}
-    .accueil3d-ctrl{font-size:clamp(10px,2.6vw,14px);max-width:22em}
+      .block:nth-child(6){grid-area:block6}
 
     /* Supprimer block4 et block5 en mobile */
     .block:nth-child(4), .block:nth-child(5) {display: none !important;}

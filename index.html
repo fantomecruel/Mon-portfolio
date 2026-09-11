@@ -13,7 +13,19 @@
 <body>
   <div id="app">
     <div class="container">
-      
+      <!--
+       
+              _    .  ,   .           .
+    *  / \_ *  / \_      _  *        *   /\'__        *
+      /    \  /    \,   ((        .    _/  /  \  *'.
+ .   /\/\  /\/ :' __ \_  `          _^/  ^/    `--.
+    /    \/  \  _/  \-'\      *    /.' ^_   \_   .'\  *
+  /\  .-   `. \/     \ /==~=-=~=-=-;.  _/ \ -. `_/   \
+ /  `-.__ ^   / .-'.--\ =-=~_=-=~=^/  _ `--./ .-'  `-
+     `. .  / /       `.~-^=-=~=^=.-'      '-._ `._
+
+
+-->
       <!-- Block 1: Photographie -->
       <div class="block" @click="handleClick(0, $event)">
         <img class="titrephoto titrephoto-desktop" src="photos/photographiebelvina.svg" alt="titrephoto desktop" />
@@ -27,11 +39,19 @@
         <img class="dog-icon-desktop" src="photos/pictodogshadow.svg" alt="Icône Dog" />
       </div>
 
-      <!-- Block 3: Graphisme (haut droit gauche) -->
-      <div class="block" @click="handleClick(2, $event)">
-        <h2>graphisme</h2>
-        <img class="titregraphisme" src="photos/graphismebleu.svg" alt="Graphisme">
-         <img class="titregraphisme-mobile" src="photos/graphismebleu.svg" alt="titre graphisme mobile" />
+      <!-- Block 3: Portfolio 3D (toute la bande haut droite) -->
+      <!-- Réplique en HTML de l'écran d'accueil de 3d/index.html : la vraie page
+           charge monde.glb (16 Mo) dès son ouverture, on ne peut donc pas la
+           mettre en iframe ici. Au clic, l'overlay charge la vraie page. -->
+      <div class="block bloc3d" @click="handleClick(2, $event)">
+        <h2>portfolio 3D</h2>
+        <div class="accueil3d">
+          <div class="accueil3d-titre">Backrooms core. Portfolio version 3D</div>
+          <div class="accueil3d-enter accueil3d-desktop">&#9654; Cliquez pour entrer</div>
+          <div class="accueil3d-enter accueil3d-mobile">&#9654; Touchez pour entrer</div>
+          <div class="accueil3d-ctrl accueil3d-desktop">Z avancer &middot; X reculer &middot; Q et D sur les c&ocirc;t&eacute;s (ou les fl&egrave;ches) &middot; souris pour regarder &middot; Espace pour sauter &middot; &Eacute;chap pour la pause</div>
+          <div class="accueil3d-ctrl accueil3d-mobile">Joystick pour marcher &middot; glissez pour regarder &middot; boutons en haut pour sauter</div>
+        </div>
       </div>
 
       <!-- Block 4: Dog icon mobile (masqué desktop) -->
@@ -40,11 +60,9 @@
       <!-- Block 5: Empty / extra content (masqué desktop) -->
       <div class="block" @click="handleClick(4, $event)"></div>
 
-      <!-- Block 6: Graphisme décor (haut droit droite) -->
-      <div class="block" @click="handleClick(5, $event)">
-        <!-- <h2>graphisme decor</h2> -->
-        <img class="graphismedecor" src="photos/graphismedecor.svg" alt="titrephoto desktop" />
-      </div>
+      <!-- Block 6: absorbé par le bloc 3D, qui occupe les colonnes 2 et 3.
+           Le div reste en place (vide, masqué en CSS) -->
+      <div class="block"></div>
     </div>
 
     <!-- OVERLAY with conditional class for block 2 card mode -->
@@ -74,32 +92,32 @@
           <div class="grid-2">
             <div class="cell"><a href="photos/cvaureliafoucher.pdf" target="_blank" class="cv-link"> → CV ← </a>Ce portfolio que j’ai développé est un aperçu de mon univers artistique et professionnel. 
             Diplômée des Beaux-Arts de Montpellier, j’ai passé la majeure partie de ma carrière professionnelle en tant qu’artiste plasticienne et photographe. J’ai souvent travaillé en restauration, un choix qui m’a permis de financer mes projets artistiques. <br><br>Tout au long de mon parcours, j’ai été fascinée par le monde du virtuel, de l’immersif, et en particulier par la réalité virtuelle. Les possibilités infinies qu’offre le monde numérique m’ont attirée et j’ai décidé de faire une formation en développement web de 7 mois en 2023, voyant ce domaine comme une extension naturelle de ma passion pour l’art visuel. <br> Pour moi, l’apprentissage des langages informatiques était un pas indispensable pour intégrer le numérique à mes projets artistiques.</div>
-            <div class="cell">La première partie de ce portfolio est une petite sélection (issue de différentes séries)  de  mon  travail  réalisé à la chambre photographique 5x7’’ ou au polaroïd. <br>J’expérimente la photographie argentique depuis 2015. Aujourd’hui, mes recherches  s’articulent autour des multiples perceptions de la réalité et de la frontière entre le réel et le virtuel, notamment en prolongeant mon travail photographique graçe à l’IA. 
-            Dans la continuité de mes questionnements sur la perception, je travaille en ce moment à l’écriture d’un court-métrage que j’aimerais réaliser. <br><br> J’ai toujours évolué autour du milieu du cinéma pendant mes études  notamment grâce à mes recontres avec des étudiant.e.s de l’ENSAV de Toulouse.  J’ai participé à de nombreux courts-métrages et clips en tant que technicienne et j’ai beaucoup hésité à poursuivre des études dans ce domaine.</div>
-            <div class="cell">Dans la partie Graphisme décor, j’ai voulu présenter quelques élements que j’ai pu réaliser pendant mon stage sur le long-métrage  «La mer au loin» de Saïd Hamich fin 2023. <br>Cette première expérience en tant qu’assistante graphiste m’a vraiment enthousiasmée et stimulée,  et c’est pour ça que j’ai suivi une formation infographiste quelques mois après, afin de me perfectionner dans la suite Adobe et viser le métier de graphiste de décoration de cinéma, en parallèle de mon activité artistique personnelle. <br><br> Enfin, dans la partie Graphisme j’ai ajouté des projets que j’ai pu réaliser : une affiche pour un documentaire, l'identité visuelle d'un bar, des affiches et un extrait de ce que j’ai fais pendant ma formation Infographiste : une fausse campagne de pub pour Haribo réalisée en partie en IA.
+            <div class="cell">La première partie de ce portfolio est une petite sélection (issue de différentes séries)  de  mon  travail  réalisé à la chambre photographique 5x7’’ ou au polaroïd. <br>J’expérimente la photographie argentique depuis 2015. J'aborde chaque image comme un espace à construire, proche du plan cinématographique, où l'intime devient un terrain d'observation plutôt qu'un récit personnel
+            Je travaille en ce moment à l’écriture d’un court-métrage que j’aimerais réaliser, qui tourne autour de la démultiplication de soi, des figures qui se répètent, se dédoublent, s'imitent,se font face. <br><br> J’ai toujours évolué autour du milieu du cinéma pendant mes études  notamment grâce à mes recontres avec des étudiant.e.s de l’ENSAV de Toulouse.  J’ai participé à de nombreux courts-métrages et clips en tant que technicienne et j’ai beaucoup hésité à poursuivre des études dans ce domaine.</div>
+            <div class="cell">J'ai travaillé sur 2 long-métrages  «La mer au loin» de Saïd Hamich fin 2023 et "Une famille de Bâtards" de Mourad Winter en 2025. <br>Ces premières expériences en tant qu’assistante graphiste et 3e assistante déco m’ont vraiment donné envie de continuer,  et c’est pour ça que j’ai suivi une formation infographiste quelques mois après, afin de me perfectionner dans la suite Adobe et viser le métier de graphiste de décoration de cinéma, en parallèle de mon activité artistique personnelle. <br><br> Enfin, dans la partie Backrooms Core, j'ai réalisé un environnement inspiré de l'univers des backrooms, dans lequel se trouve des fragments et références aux lieux qui peuplent mon inconscient, mes souvenirs. Cette partie est encore en construction, j'aimerais qu'elle soit interactive. 
             </div>  
           </div>
         </div>
       </div>
 
-    <!-- PDF (Graphisme & Web) plein écran -->
-  <div v-if="(activeBlock.index === 2 || activeBlock.index === 5) && showPdfContent" 
-     class="pdf-container" 
+    <!-- Portfolio 3D plein écran -->
+  <div v-if="activeBlock.index === 2 && show3d"
+     class="pdf-container conteneur3d"
      @click.stop>
   <button class="btn-close" @click.stop="closeOverlay" aria-label="Fermer">X</button>
 <a
-  :href="activeBlock.index === 2 ? 'photos/graphisme.pdf' : 'photos/graphismedecor.pdf'"
+  href="3d/index.html"
   target="_blank"
   style="position:absolute; right:12px; top:40px; z-index:11; font: 14px/1.2 sans-serif; background:#000; color:#fff; padding:6px 10px; border-radius:6px; text-decoration:none;">
   Ouvrir dans un onglet
 </a>
-  <iframe 
-    :src="activeBlock.index === 2 
-      ? 'photos/graphisme.pdf#zoom=page-fitH' 
-      : 'photos/graphismedecor.pdf#zoom=page-fitH'" 
-    style="width:100%;height:100%;" 
-    frameborder="0" 
-    title="Portfolio PDF">
+  <iframe
+    src="3d/index.html"
+    class="iframe3d"
+    allow="fullscreen; pointer-lock"
+    allowfullscreen
+    frameborder="0"
+    title="Portfolio 3D">
   </iframe>
 
 
