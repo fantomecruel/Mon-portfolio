@@ -3,99 +3,68 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Backrooms core — Portfolio version 3D (en cours de développement)</title>
+<title>Backrooms core — Portfolio version 3D</title>
 <style>
-  /* Police de l'écran d'accueil */
-  @font-face {
-    font-family: 'Belvina';
-    src: url('CSBelvina-Regular_demo-BF669f0fb63ba84.otf') format('opentype');
-    font-weight: normal; font-style: normal; font-display: swap;
-  }
-
-  html, body { margin:0; padding:0; overflow:hidden; height:100%; background:#1a1026;
-               font-family:'Belvina', "Courier New", monospace; touch-action:none;
-               -webkit-user-select:none; user-select:none; }
+  /* Police de tout le site : le fichier .otf doit accompagner index.html partout où il est publié */
+  @font-face { font-family:'Belvina'; src:url('CSBelvina-Regular_demo-BF669f0fb63ba84.otf') format('opentype'); font-display:swap; }
+  html, body { margin:0; height:100%; overflow:hidden; background:#191014; color:#fff;
+               font-family:'Belvina', "Courier New", monospace;
+               touch-action:none; -webkit-user-select:none; user-select:none; }
   canvas { display:block; }
+  button { font:inherit; cursor:pointer; }
 
   /* ---------- Écran d'accueil ---------- */
-  #intro { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column;
-           align-items:center; justify-content:center; text-align:center; cursor:pointer;
-           background:#000; color:#fff;
-           font-family:'Belvina', "Courier New", monospace; }
-  #intro h1 { color:#fff; font-size:clamp(30px,6.5vw,60px); letter-spacing:2px; margin:0 0 18px;
-              font-weight:normal; line-height:1.15; max-width:16em; padding:0 20px; }
-  #intro .enter { color:#fff; font-size:clamp(20px,3.7vw,30px); animation:pulse 1.6s infinite; }
+  #intro { position:fixed; inset:0; z-index:50; display:flex; flex-direction:column; align-items:center;
+           justify-content:center; text-align:center; cursor:pointer; background:#000; }
+  #intro h1 { font-size:clamp(30px,6.5vw,60px); font-weight:normal; letter-spacing:2px; line-height:1.15;
+              margin:0 0 18px; max-width:16em; padding:0 20px; }
+  #intro .enter { font-size:clamp(20px,3.7vw,30px); animation:pulse 1.6s infinite; }
+  #intro .ctrl  { font-size:clamp(11px,2.2vw,15px); color:rgba(255,255,255,.7); margin-top:22px;
+                  background:rgba(255,255,255,.07); padding:8px 16px; border-radius:8px; max-width:44em; }
   #intro .note  { color:#e05555; font-size:clamp(10px,1.8vw,13px); margin-top:16px; }
-  #intro .ctrl  { color:rgba(255,255,255,.7); font-size:clamp(11px,2.2vw,15px); margin-top:22px;
-                  background:rgba(255,255,255,.07); padding:8px 16px; border-radius:8px;
-                  max-width:44em; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.45} }
 
-  /* ---------- Viseur (desktop) ---------- */
-  #crosshair { position:fixed; left:50%; top:50%; width:6px; height:6px; margin:-3px 0 0 -3px;
-               border-radius:50%; background:rgba(255,255,255,.85); z-index:10; display:none;
-               box-shadow:0 0 4px rgba(0,0,0,.6); pointer-events:none; }
-
-  /* ---------- Bandeau "cliquez pour reprendre" ---------- */
-  #hint { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:12;
-          color:#fff; background:rgba(30,15,50,.65); padding:8px 18px; border-radius:8px;
-          font-size:14px; display:none; pointer-events:none; }
-
-  /* ---------- Bandeau d'état (chargement du monde) ---------- */
-  #etat { position:fixed; left:50%; bottom:70px; transform:translateX(-50%); z-index:30;
-          background:rgba(18,8,30,.85); color:#ffe9c9; border:2px solid #f5e9d0;
-          border-radius:10px; padding:10px 16px; font-size:14px; text-align:center;
-          letter-spacing:1px; max-width:80vw; }
-  #etat button { margin-top:8px; font:inherit; cursor:pointer; background:#f5e9d0;
-                 color:#22182e; border:none; border-radius:6px; padding:6px 14px; font-weight:bold; }
-
-  /* ---------- Joystick mobile ---------- */
-  #joystick { position:fixed; left:22px; bottom:22px; width:120px; height:120px; z-index:20;
-              border-radius:50%; background:rgba(255,255,255,.10);
-              border:2px solid rgba(255,255,255,.35); display:none; touch-action:none; }
-  #stick { position:absolute; left:50%; top:50%; width:52px; height:52px;
-           margin:-26px 0 0 -26px; border-radius:50%;
-           background:rgba(255,255,255,.55); box-shadow:0 2px 6px rgba(0,0,0,.4); }
+  /* ---------- Viseur, invite « cliquez », bandeau d'état ---------- */
+  #viseur { position:fixed; left:50%; top:50%; width:6px; height:6px; margin:-3px 0 0 -3px; border-radius:50%;
+            background:rgba(255,255,255,.85); box-shadow:0 0 4px rgba(0,0,0,.6); z-index:10; display:none; pointer-events:none; }
+  #invite { position:fixed; bottom:26px; left:50%; transform:translateX(-50%); z-index:12; display:none;
+            background:rgba(30,15,50,.65); padding:8px 18px; border-radius:8px; font-size:14px; pointer-events:none; }
+  #etat { position:fixed; left:50%; bottom:70px; transform:translateX(-50%); z-index:30; display:none;
+          background:rgba(18,8,30,.85); color:#ffe9c9; border:2px solid #f5e9d0; border-radius:10px;
+          padding:10px 16px; font-size:14px; text-align:center; letter-spacing:1px; max-width:80vw; }
+  #etat button { margin-top:8px; background:#f5e9d0; color:#22182e; border:none; border-radius:6px; padding:6px 14px; font-weight:bold; }
 
   /* ---------- Barre de commandes (haut de l'écran) ---------- */
-  #barre { position:fixed; top:14px; left:14px; right:112px; z-index:25; display:none;
-           gap:6px; align-items:center; flex-wrap:wrap; }
-  #barre button { font-family:inherit; font-size:12px; cursor:pointer; color:#e8ddcf;
-                  background:rgba(22,14,32,.75); border:1px solid #6c5a7a; border-radius:6px;
-                  padding:6px 10px; touch-action:none; -webkit-user-select:none; user-select:none; }
+  #barre { position:fixed; top:14px; left:14px; right:112px; z-index:25; display:none; gap:6px; align-items:center; flex-wrap:wrap; }
+  #barre button { font-size:12px; color:#e8ddcf; background:rgba(22,14,32,.75); border:1px solid #6c5a7a;
+                  border-radius:6px; padding:6px 10px; touch-action:none; }
   #barre button:hover { background:rgba(72,50,95,.9); }
-  #barre button.actif { background:#d8b8c8; color:#22182e; border-color:#f0d8e2; }
+  #barre button.actif, #reglages button.on { background:#d8b8c8; color:#22182e; border-color:#f0d8e2; }
   #barre .sep { width:1px; height:20px; background:#6c5a7a; margin:0 4px; }
-  @media (max-width:640px) { #barre button[data-touche] { display:none; } }
+  @media (max-width:640px) { #barre button[data-touche] { display:none; } }  /* le joystick prend le relais */
 
   /* ---------- Écran de pause (Échap) ---------- */
-  #pause { position:fixed; inset:0; z-index:45; display:none; flex-direction:column;
-           align-items:center; justify-content:center; text-align:center; cursor:pointer;
-           background:rgba(18,8,30,.72); backdrop-filter:blur(3px); color:#f2e9dc; }
-  #pause h2 { margin:0 0 12px; font-size:clamp(22px,5vw,40px); letter-spacing:6px; color:#ffe9c9;
-              text-shadow:3px 3px 0 rgba(20,10,30,.5); }
+  #pause { position:fixed; inset:0; z-index:45; display:none; flex-direction:column; align-items:center; justify-content:center;
+           text-align:center; cursor:pointer; background:rgba(18,8,30,.72); backdrop-filter:blur(3px); color:#f2e9dc; }
+  #pause h2 { margin:0 0 12px; font-size:clamp(22px,5vw,40px); letter-spacing:6px; color:#ffe9c9; }
   #pause .aide { font-size:13px; color:#c9bcd4; margin-bottom:20px; line-height:1.8; }
-  #pause button { font:inherit; font-size:15px; cursor:pointer; background:#f5e9d0; color:#22182e;
-                  border:none; border-radius:8px; padding:9px 22px; font-weight:bold; }
+  #pause button { font-size:15px; background:#f5e9d0; color:#22182e; border:none; border-radius:8px; padding:9px 22px; font-weight:bold; }
 
-  /* ---------- Panneau de réglages (touche P) ---------- */
-  #reglages { position:fixed; top:14px; right:14px; z-index:60; display:none;
-              background:rgba(22,14,32,.92); color:#f2e9dc; border:2px solid #6c5a7a;
-              border-radius:10px; padding:12px 14px; font-size:12px; line-height:1.5;
-              max-width:250px; box-shadow:0 8px 30px rgba(0,0,0,.55); }
+  /* ---------- Joystick mobile ---------- */
+  #joystick { position:fixed; left:22px; bottom:22px; width:120px; height:120px; z-index:20; display:none; border-radius:50%;
+              background:rgba(255,255,255,.10); border:2px solid rgba(255,255,255,.35); touch-action:none; }
+  #stick { position:absolute; left:50%; top:50%; width:52px; height:52px; margin:-26px 0 0 -26px; border-radius:50%;
+           background:rgba(255,255,255,.55); box-shadow:0 2px 6px rgba(0,0,0,.4); }
+
+  /* ---------- Panneau de réglages (touche P) — n'existe qu'avec index.html?reglages ---------- */
+  #reglages-ouvre { position:fixed; top:14px; right:14px; z-index:59; display:none; font-size:11px; color:#e8ddcf;
+                    background:rgba(22,14,32,.75); border:1px solid #6c5a7a; border-radius:6px; padding:4px 9px; }
+  #reglages { position:fixed; top:14px; right:14px; z-index:60; display:none; background:rgba(22,14,32,.92); color:#f2e9dc;
+              border:2px solid #6c5a7a; border-radius:10px; padding:12px 14px; font-size:12px; line-height:1.5; max-width:250px; }
   #reglages h3 { margin:0 0 8px; font-size:13px; letter-spacing:2px; color:#ffe9c9; }
-  #reglages .grp { margin-bottom:10px; }
-  #reglages .lbl { color:#a99bb5; text-transform:uppercase; letter-spacing:1px;
-                   font-size:10px; display:block; margin-bottom:3px; }
-  #reglages button { font-family:inherit; font-size:11px; cursor:pointer; margin:0 3px 3px 0;
-                     background:#33234a; color:#e8ddcf; border:1px solid #6c5a7a;
-                     border-radius:5px; padding:3px 8px; }
-  #reglages button:hover { background:#48325f; }
-  #reglages button.on { background:#d8b8c8; color:#22182e; border-color:#f0d8e2; font-weight:bold; }
+  #reglages .lbl { display:block; color:#a99bb5; text-transform:uppercase; letter-spacing:1px; font-size:10px; margin:8px 0 3px; }
+  #reglages button { font-size:11px; margin:0 3px 3px 0; background:#33234a; color:#e8ddcf; border:1px solid #6c5a7a; border-radius:5px; padding:3px 8px; }
   #reglages .aide { color:#8d81a0; font-size:10px; margin-top:8px; }
-  #reglages-ouvre { position:fixed; top:14px; right:14px; z-index:59; cursor:pointer;
-                    background:rgba(22,14,32,.75); color:#e8ddcf; border:1px solid #6c5a7a;
-                    border-radius:6px; padding:4px 9px; font:11px "Courier New", monospace; }
 </style>
 </head>
 <body>
@@ -106,8 +75,8 @@
   <div class="ctrl"  id="intro-ctrl"></div>
   <div class="note">version mobile pas à jour pour le moment</div>
 </div>
-<div id="crosshair"></div>
-<div id="hint">Cliquez dans l'image pour regarder autour de vous</div>
+<div id="viseur"></div>
+<div id="invite">Cliquez dans l'image pour regarder autour de vous</div>
 <div id="etat"></div>
 <div id="barre">
   <button data-touche="KeyW">&#8593; avancer</button>
@@ -126,17 +95,11 @@
   <button id="b-reprendre">Reprendre la visite</button>
 </div>
 <div id="joystick"><div id="stick"></div></div>
-<div id="reglages-ouvre">réglages · P</div>
+<button id="reglages-ouvre">réglages · P</button>
 <div id="reglages">
   <h3>RÉGLAGES</h3>
-  <div class="grp"><span class="lbl">Résolution du rendu</span>
-    <span id="g-res"></span></div>
-  <div class="grp"><span class="lbl">Éclairage</span>
-    <span id="g-lum"></span></div>
-  <div class="grp"><span class="lbl">Grain PS1</span>
-    <span id="g-grain"></span></div>
-  <div class="grp"><span class="lbl">Fumée</span>
-    <span id="g-fum"></span></div>
+  <span class="lbl">Résolution du rendu</span><span id="g-res"></span>
+  <span class="lbl">Fumée</span><span id="g-fum"></span>
   <div class="aide">P ferme ce panneau · Échap met en pause</div>
 </div>
 
@@ -146,167 +109,83 @@
 <script>
 'use strict';
 /* =====================================================================
-   PORTFOLIO VOXEL — style Minecraft, coucher de soleil
-   Tout est réglable dans le bloc de constantes ci-dessous.
+   BACKROOMS CORE — visite 3D du portfolio (three.js r128)
+
+   Le monde entier vient de Blender (monde.glb). Ce fichier ajoute le visiteur
+   (déplacements, collisions), l'interface, la lumière, l'eau et la fumée.
+
+   CONTRAT DE NOMMAGE avec le .blend — c'est TOUT ce que le code attend :
+     spawn (Empty)            point de départ. Absent → DEPART_GLB ci-dessous
+     plafond…  (objets)       plafonds : reçoivent LUMIERE_CIELS / LUMIERE_PLAFONDS
+     eau… / water… (objet ou matériau)   traversable + teinte COULEUR_EAU
+     ce qui est animé ou riggé (personnages, requin)   ne bloque pas le visiteur
+     tout le reste            solide
+   Le bilan du monde chargé s'affiche dans la console (F12) : __debug.bilan
    ===================================================================== */
-
-/* ------------------- TEXTES ------------------- */
-const TITRE_PORTFOLIO = "Backrooms core. Portfolio version 3D";
-/* --------- AMBIANCE PS1 --------- */
-const RESOLUTION_PS1 = 0.8;            // résolution interne du rendu (0.25 = très pixélisé, 1 = net)
-const COULEUR_BROUILLARD = 0x191014;   // couleur du brouillard ET du fond de l'écran
-const LUMIERE_AMBIANTE_HAUT = 0xe8b8c0, LUMIERE_AMBIANTE_BAS = 0x9a7280; // BAS éclaire le plafond
-
-/* --------- MONDE BLENDER (glTF) ---------
-   Si un fichier maison.glb est présent à côté d'index.html, il REMPLACE
-   entièrement le décor généré ci-dessous. Export depuis Blender :
-   File → Export → glTF 2.0, réglages par défaut, nom "maison.glb".
-   Conventions dans le fichier Blender :
-   - spawn (facultatif)               : point de départ du visiteur
-   - objets dont le nom commence par "eau" : traversables (pas de collision)  */
-// on peut essayer un autre fichier sans rien modifier : index.html?glb=_test_512j.glb
-// « monde.glb » est TOUJOURS la version en service. Un nouvel export s'écrit
-// d'abord sous un nom daté (monde_AAAAMMJJx.glb) ; une fois vérifié, l'ancien
-// monde.glb part dans _corbeille/ et le nouveau prend sa place — on déplace,
-// on n'écrase jamais. Un essai se fait sans rien toucher : index.html?glb=autre.glb
-const FICHIER_GLB = new URLSearchParams(location.search).get('glb') || 'monde.glb';
-// Point d'arrivée du visiteur, repris de la caméra « Camera.002 » posée dans la
-// collection POOLROOMS du .blend : Blender (48,2 · −14,643 · −0,815) devient
-// three (48,2 · −0,815 · 14,643), cap −38,99°, inclinaison −5,2°.
-// Le visiteur est posé SUR LE SOL à cet endroit, pas en l'air à la hauteur de la
-// caméra — sinon il tomberait à la première image. Le regard, lui, est identique.
-// Un Empty nommé « spawn » dans le .blend reprendrait la main sur x et z.
-const DEPART_GLB = { x: 48.2, y: -0.815, z: 14.643, yaw: -0.6805, pitch: -0.0908 };
-
-/* --------- CAPTURE DE LA SOURIS ---------
-   true  : la souris est prise dès qu'on entre, on regarde autour tout de suite.
-           En contrepartie, sous capture TOUS les clics vont au canvas quelle que
-           soit leur position — la barre de commandes serait donc incliquable.
-           On la masque donc pendant la capture ; Échap la fait réapparaître.
-   false : le visiteur clique dans l'image quand il veut regarder, et la barre
-           reste utilisable à la souris en permanence.
-   Sans effet sur mobile, où il n'y a pas de capture (joystick + glissé).     */
-const CAPTURE_IMMEDIATE = true;
-                                                        // chambre verte : armoire, fauteuil, portrait
-// pres = distance où le brouillard commence · loin = distance où tout est noyé (mètres)
-const BROUILLARD_GLB = { pres: 12, loin: 70 };
-let ECHELLE_LAMPES_GLB = 0.06;  // facteur sur la puissance des lampes Blender (1 = brut)
-let EXPO_LUMIERE      = 0.10;   // exposition en mode 'blender' — plus bas = plus tamisé
-let AMBIANTE_LUMIERE  = 0.03;   // ambiante en mode 'blender' — plus bas = plus contrasté
-let BOOST_CIELS       = 1.0;    // multiplicateur sur les plafonds de ciel émissifs
-let PLAFOND_LAMPES_GLB = 1400;  // genou doux par lampe, en candelas — compresse au lieu de couper net
-
-/* --------- LUMIÈRE DES PLAFONDS (se règle ICI, dans le code) ---------
-   Les lampes Point sont à ~2 m ; le plafond de la pièce 7 est à 13 m et ne
-   reçoit rien d'elles. Et la couleur de base des plafonds est NOIRE dans le
-   .blend (tout est peint dans l'émission) : sans ce réglage ils sont noirs.
-
-   ⚠️ Pourquoi il faut monter bien au-dessus de 1 : le glTF plafonne
-   `emissiveFactor` à 1 et three.js r128 ignore KHR_materials_emissive_strength.
-   Ton émission à 0,4 dans Blender arrive donc telle quelle, et c'est trop
-   faible pour une exposition de 0,10. D'où des valeurs de 1 à 4 ici.
-     0 = exactement l'export Blender (0,4 dans les faits — mesuré identique)
-
-   Luminance du plafond mesurée à l'écran (0-255), fumée éteinte :
-     force              0    1    2    3    4    6
-     pièce 7 désert    18   39   62   78   90  108
-     pièce 04          39   72  102  121  134  153
-     pièce 02           5   18   36   50   61   77
-     open-space         1    5   15   24   33   46
-     couloir sous-sol  43   85  117  136  149  167
-   Essai à chaud sans recharger : __debug.plafonds(3, 1)                    */
-let LUMIERE_CIELS    = 3.0;   // plafonds de CIEL (6 objets)
-let LUMIERE_PLAFONDS = 1.0;   // plafonds PLEINS (4 objets)
-// Classement en deux familles, d'apres le nom du MATERIAU. Inutile de tester le
-// nom de la texture : l'exportateur glTF de Blender n'ecrit aucun nom d'image,
-// three.js les recoit toutes vides.
-const MOTS_CIEL = /ciel|nuage|sky|cloud/i;
-// Ces matériaux SONT des ciels malgré leur nom — le piège relevé dans CLAUDE.md :
-// « plafondOpenSpace » porte plafondCiel4.png et « plafond_bureaux » porte
-// plafondciel2.jpeg. Ajouter ici tout nouveau ciel au nom trompeur.
-const CIELS_EN_PLUS = ['plafondOpenSpace', 'plafond_bureaux'];
-// Repli pour un plafond qui n'a NI texture NI couleur de base : dans le .blend
-// leur couleur de base est noire (tout est peint dans l'émission), s'en servir
-// les laisserait noirs. Plâtre neutre, volontairement terne.
-const TEINTE_PLAFOND_NU = 0xbdb7ad;
-
-/* --------- ANIMATIONS DU .BLEND ---------
-   Le .glb porte 5 clips (« Swim » anime le requin, « requinAction.005 » le fait
-   suivre son trajet) et 4 squelettes. Sans lecteur, three.js laisse chaque
-   squelette sur les transformations par défaut du glTF : le requin sortait les
-   7 os empilés à la verticale, d'où sa raideur. false = tout se fige.       */
-const ANIMATIONS_ACTIVES = true;
-let VITESSE_ANIMATIONS = 1.0;   // 1 = vitesse du .blend · 0.5 = moitié moins vite
-
-/* --------- LUMIÈRE DES POOLROOMS (se règle ICI) ---------
-   La salle est un volume à part, à l'autre bout du monde, avec ses propres
-   lampes. Emprise reprise de ta collection POOLROOMS de Blender, convertie en
-   repère three (x 37,5→101,6 · y −11,3→12,4 · z −10,5→23,2) et un peu élargie.
-     1 = comme le reste du monde · 2 = deux fois plus · 0 = éteint
-   Essai à chaud sans recharger : __debug.poolrooms(1.6, 1.2)                */
-let LUMIERE_POOLROOMS = 0.3;   // les lampes situées DANS la salle
-let EMISSIF_POOLROOMS = 2.0;   // les matériaux qui ne servent QUE dans la salle
-const ZONE_POOLROOMS = { x: [36, 103], y: [-12, 13.5], z: [-11.5, 24] };
-
-/* ---------- L'EAU DES POOLROOMS ----------
-   Dans Blender l'eau paraît bleue par REFLET : `water2` est un vert d'eau
-   (73cca5) quasi miroir qui renvoie le ciel. three.js r128 n'a aucun
-   environnement à réfléchir, il ne reste que la couleur de base.
-
-   ⚠️ Mesuré le 11 septembre : avec un matériau ÉCLAIRÉ, ni la couleur ni
-   l'émission n'atteignent l'écran — le bassin ne reçoit presque aucune lumière,
-   et seule l'opacité fait bouger un pixel. L'eau rend donc gris-noir quoi qu'on
-   règle. On lui substitue un `MeshBasicMaterial`, qui ignore l'éclairage, avec
-   `toneMapped = false` pour que l'exposition à 0,10 ne l'écrase pas.
-   L'original Blender est conservé : __debug.eau(null) le restitue.
-
-   Trois réglages indépendants :
-     COULEUR    la teinte pure
-     OPACITE    combien elle couvre le carrelage du fond (0 = invisible)
-     LUMINOSITE un multiplicateur sur la teinte. Le tone mapping étant
-                désactivé ici, au-delà de 1 les valeurs saturent vers le blanc.
-   Essai à chaud : __debug.eau('#2a8f8a', 0.45, 1)                          */
-let COULEUR_EAU    = 0x2a8f8a;   // turquoise ; null = matériau Blender d'origine
-let OPACITE_EAU    = 0.45;       // plus bas = eau plus discrète
-let LUMINOSITE_EAU = 0.2;          // 0,5 = deux fois plus sombre · 1,5 = plus lumineuse
-const eaux = [];              // { mesh, origine, teinte }
-const estEau = (o, m) => /^eau/i.test(o.name || '') || /^water/i.test((m && m.name) || '');
-
-function appliquerEau() {
-  eaux.forEach(({ mesh, origine, teinte }) => {
-    if (COULEUR_EAU === null) { mesh.material = origine; return; }
-    teinte.color.setHex(COULEUR_EAU).multiplyScalar(LUMINOSITE_EAU);
-    teinte.opacity = OPACITE_EAU;
-    teinte.needsUpdate = true;
-    mesh.material = teinte;
-  });
-  return { couleur: COULEUR_EAU === null ? 'origine Blender'
-                  : '#' + COULEUR_EAU.toString(16).padStart(6, '0'),
-           opacite: OPACITE_EAU, luminosite: LUMINOSITE_EAU, nappes: eaux.length };
+if (typeof THREE === 'undefined' || !THREE.GLTFLoader || !THREE.DRACOLoader) {
+  const e = document.getElementById('etat');
+  e.style.display = 'block';
+  e.textContent = 'Bibliothèque 3D indisponible : vérifiez la connexion, puis rechargez.';
+  throw new Error('three.js absent');
 }
 
-/* --------- LE REQUIN ---------
-   Plus rien à régler ici : depuis le 11 septembre 2026 tout se passe dans le
-   .blend. « requin2 » (l'objet droit) est enfant de l'empty « requin », qui
-   porte l'action de trajet requinAction.005 — elle suit donc la boucle toute
-   seule, et son armature joue « Swim.001 » en continu (clip de 6,63 s rejoué
-   trois fois par boucle de 19,79 s).
-   L'ancien requin, dont l'armature sortait tordue de l'export, est masqué dans
-   le .blend : ses 22 objets ne sont plus exportés du tout.                  */
-
 /* =====================================================================
-   FUMÉE PS1 — billboards immobiles (technique d'époque : des plans
-   translucides qui font toujours face à la caméra). Blanc laiteux,
-   densité variable selon la pièce, aucune animation.
-   Coordonnées en repère three.js : x et z au sol, y = hauteur.
+   RÉGLAGES — tout ce qui se règle sans toucher à Blender
    ===================================================================== */
-const FUMEE_ACTIVE  = true;
-const FUMEE_COULEUR = 0xdfe6ea;      // blanc laiteux, à peine bleuté : reste
-                                     // lisible même sur le carrelage blanc
-const FUMEE_MAX     = 820;           // garde-fou global
-const FUMEE_GRAINE  = 20260905;      // même graine = même fumée à chaque fois
-// nb = nombre de nuages VISÉ dans la pièce · taille = diamètre mini/maxi (m)
-// opacite = transparence mini/maxi · haut = hauteur au-dessus du sol (m)
+const TITRE = "Backrooms core. Portfolio version 3D";
+// « monde.glb » est TOUJOURS la version en service. Pour essayer un autre export
+// sans rien toucher : index.html?glb=monde_20260915.glb
+const FICHIER_GLB = new URLSearchParams(location.search).get('glb') || 'monde.glb';
+const RESOLUTION = 0.8;          // résolution interne du rendu : 1 = net, 0.5 = gros pixels PS1
+const CAPTURE_IMMEDIATE = true;  // la souris est prise dès le clic sur l'accueil (la barre se cache pendant la capture, Échap la rend)
+
+// Point d'arrivée = caméra « Camera.002 » du .blend, en repère three :
+// three.x = blender.x · three.y = blender.z (hauteur) · three.z = −blender.y.
+// Le visiteur est posé SUR LE SOL sous ce point. Un Empty « spawn » dans le .blend prend le dessus.
+const DEPART_GLB = { x: 48.2, y: -0.815, z: 14.643, yaw: -0.6805, pitch: -0.0908 };
+
+// Brouillard : distance où il commence / où tout est noyé (m), et sa couleur (aussi le fond d'écran)
+const BROUILLARD = { pres: 12, loin: 70, couleur: 0x191014 };
+
+/* --- Lumière (essai à chaud dans la console : __debug.expo(v), __debug.ambiante(v), __debug.lampes(echelle, plafond)) --- */
+let EXPO_LUMIERE = 0.10;       // exposition globale — plus bas = plus tamisé
+let AMBIANTE = 0.03;           // lumière ambiante — plus bas = plus contrasté
+const AMBIANTE_HAUT = 0xe8b8c0, AMBIANTE_BAS = 0x9a7280;  // teintes chaudes (BAS éclaire les plafonds)
+let ECHELLE_LAMPES = 0.06;     // facteur sur la puissance des lampes Blender (1 = brut)
+let PLAFOND_LAMPES = 1400;     // genou doux (candelas) : une lampe forte s'en approche sans jamais l'atteindre
+
+/* --- Plafonds : ils s'éclairent eux-mêmes (__debug.plafonds(ciels, pleins)) ---
+   Dans le .blend, leur couleur de base est NOIRE (tout est peint dans l'émission) et le
+   glTF plafonne l'émission à 1 : sans ceci ils rendent noirs. 0 = export Blender brut.
+   Luminance mesurée à l'écran (pièce 7, sur 255) : force 1 → 39 · 2 → 62 · 3 → 78 · 4 → 90 */
+let LUMIERE_CIELS = 3.0;       // plafonds de CIEL
+let LUMIERE_PLAFONDS = 1.0;    // plafonds PLEINS
+const MOTS_CIEL = /ciel|nuage|sky|cloud/i;                     // un ciel se reconnaît au nom de l'objet ou du matériau…
+const CIELS_EN_PLUS = ['plafondOpenSpace', 'plafond_bureaux'];  // …sauf ces matériaux de ciel au nom trompeur
+const TEINTE_PLAFOND_NU = 0xbdb7ad;                             // plafond sans texture : plâtre neutre
+
+/* --- Poolrooms : la salle se règle à part (__debug.poolrooms(lampes, emissif)) ---
+   Emprise en repère three, reprise de la collection POOLROOMS du .blend. */
+let LUMIERE_POOLROOMS = 0.3;   // × sur les lampes situées dans la zone
+let EMISSIF_POOLROOMS = 2.0;   // × sur les matériaux qui ne servent QUE dans la zone
+const ZONE_POOLROOMS = { x: [36, 103], y: [-12, 13.5], z: [-11.5, 24] };
+
+/* --- Eau (__debug.eau('#2a8f8a', 0.45, 0.2) · __debug.eau(null) = matériau Blender d'origine) ---
+   Le bleu vu dans Blender est un REFLET ; three.js n'a rien à refléter et l'eau
+   sortait gris-noir. On la remplace par une teinte NON éclairée, et on la traverse. */
+let COULEUR_EAU = 0x2a8f8a;    // null = matériau Blender d'origine
+let OPACITE_EAU = 0.45;        // combien elle couvre le fond du bassin
+let LUMINOSITE_EAU = 0.2;      // multiplicateur sur la teinte (au-delà de 1 : sature vers le blanc)
+
+/* --- Animations du .blend (__debug.anims(v)) --- */
+let VITESSE_ANIMATIONS = 1.0;  // 1 = vitesse du .blend · 0 = tout figé
+
+/* --- Fumée PS1 : billboards immobiles qui font face à la caméra (__debug.fumeeVisible(false)) ---
+   nb = nuages visés · taille = diamètre min/max (m) · opacite min/max · haut = hauteur au-dessus du sol (m) */
+const FUMEE_ACTIVE = true;
+const FUMEE_COULEUR = 0xdfe6ea;  // blanc laiteux, à peine froid : reste lisible sur le carrelage blanc
+const FUMEE_MAX = 820;           // garde-fou global
+const FUMEE_GRAINE = 20260905;   // même graine = même fumée à chaque visite
 const FUMEE_ZONES = [
   { nom:'piscine',    x:[ 14, 29], z:[   5,  15], nb: 90, taille:[2.5, 5.5], opacite:[0.10,0.24], haut:[0.1, 2.8] },
   { nom:'tunnel_ss',  x:[-14, 39], z:[  -8,  -3], nb:120, taille:[2.0, 4.5], opacite:[0.10,0.26], haut:[0.1, 2.2] },
@@ -317,61 +196,31 @@ const FUMEE_ZONES = [
   { nom:'openspace',  x:[-10, 13], z:[  28,  47], nb: 30, taille:[2.0, 4.0], opacite:[0.05,0.12], haut:[0.2, 2.3] },
   { nom:'entree',     x:[ -4, 10], z:[  -5,   5], nb: 22, taille:[1.8, 3.2], opacite:[0.05,0.11], haut:[0.2, 2.1] },
 ];
-// autour d'un cadre photo, la fumée s'écarte (rayon en mètres)
-const FUMEE_DEGAGEMENT = 2.6;
 
-/* --------- MODE D'ÉCLAIRAGE (comparatif) ---------
-   'emissif' : dalles/écrans émissifs renforcés + ambiante douce, lampes bridées
-   'blender' : les lampes Point du .blend telles quelles, recalibrées
-   'plat'    : aucune lampe, ambiante seule — le plus PS1                    */
-let MODE_LUMIERE = 'blender';
-
-/* --------- GRAIN PS1 (géométrie & textures) ---------
-   jitter : les sommets s'accrochent à une grille de pixels → la géométrie
-            vibre quand on bouge (le tic PS1 le plus reconnaissable)
-   affine : textures sans correction de perspective → elles ondulent sur
-            les grandes surfaces, comme sur la vraie console                */
-let PS1_JITTER = false;
-let PS1_AFFINE = false;
-const PS1_GRILLE = 190;   // finesse de la grille du jitter (petit = plus tremblant)
-
-/* --------- JOUEUR --------- */
-const VITESSE   = 3.4;    // vitesse de marche (mètres / seconde)
-const FORCE_SAUT = 7.0;   // impulsion du saut · 0 = saut désactivé · 7 ≈ 1 m de haut
-const HAUTEUR_YEUX = 1.6; // hauteur des yeux au-dessus des pieds
-const RAYON_JOUEUR = 0.32, HAUTEUR_JOUEUR = 1.72, GRAVITE = 24;
+/* --- Visiteur --- */
+const VITESSE = 3.4;           // marche (m/s)
+const FORCE_SAUT = 7.0;        // impulsion du saut (≈ 1 m de haut) · 0 = pas de saut
+const HAUTEUR_YEUX = 1.6, HAUTEUR_JOUEUR = 1.72, RAYON_JOUEUR = 0.32, GRAVITE = 24;
 
 /* =====================================================================
-   FIN DES RÉGLAGES — le code commence ici
+   SCÈNE : caméra, rendu, tone mapping AgX, ambiance
    ===================================================================== */
+const IS_MOBILE = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && matchMedia('(pointer: coarse)').matches;
 
-const IS_MOBILE = (('ontouchstart' in window) || navigator.maxTouchPoints > 0)
-                  && matchMedia('(pointer: coarse)').matches;
-
-/* =====================================================================
-   SCÈNE THREE.JS
-   ===================================================================== */
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(COULEUR_BROUILLARD, BROUILLARD_GLB.pres, BROUILLARD_GLB.loin);
-
+scene.fog = new THREE.Fog(BROUILLARD.couleur, BROUILLARD.pres, BROUILLARD.loin);
 const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 600);
 camera.rotation.order = 'YXZ';
 
-/* ---------- Tone mapping AgX : le même que le viewport de Blender ----------
-   Blender 4+/5 affiche en AgX (désature les hautes lumières, roulé doux).
-   three.js r128 ne connaît qu'ACES Filmic, nettement plus contrasté et
-   saturé — c'est LA raison pour laquelle le site ne ressemblait pas au
-   viewport. On greffe donc AgX à la place de « Linear » dans le shader. */
-(function greffeAgX() {
-  const AGX_GLSL = `
+/* Tone mapping AgX — celui du viewport de Blender. three.js r128 ne connaît qu'ACES
+   (plus contrasté, plus saturé) : on greffe AgX dans le shader À LA PLACE de la fonction
+   LinearToneMapping (après la déclaration de toneMappingExposure, sinon le shader ne
+   compile pas), puis on demande le mode « Linear » au rendu. */
+const AGX_GLSL = `
 const mat3 AGX_REC2020_TO_SRGB = mat3(
-  vec3( 1.6605, -0.1246, -0.0182 ),
-  vec3( -0.5876, 1.1329, -0.1006 ),
-  vec3( -0.0728, -0.0083, 1.1187 ) );
+  vec3( 1.6605, -0.1246, -0.0182 ), vec3( -0.5876, 1.1329, -0.1006 ), vec3( -0.0728, -0.0083, 1.1187 ) );
 const mat3 AGX_SRGB_TO_REC2020 = mat3(
-  vec3( 0.6274, 0.0691, 0.0164 ),
-  vec3( 0.3293, 0.9195, 0.0880 ),
-  vec3( 0.0433, 0.0113, 0.8956 ) );
+  vec3( 0.6274, 0.0691, 0.0164 ), vec3( 0.3293, 0.9195, 0.0880 ), vec3( 0.0433, 0.0113, 0.8956 ) );
 const mat3 AGX_INSET = mat3(
   vec3( 0.856627153315983, 0.137318972929847, 0.11189821299995 ),
   vec3( 0.0951212405381588, 0.761241990602591, 0.0767994186031903 ),
@@ -384,248 +233,133 @@ const float AGX_MIN_EV = -12.47393;
 const float AGX_MAX_EV = 4.026069;
 vec3 agxContrast( vec3 x ) {
   vec3 x2 = x * x; vec3 x4 = x2 * x2;
-  return 15.5 * x4 * x2 - 40.14 * x4 * x + 31.96 * x4 - 6.868 * x2 * x
-       + 0.4298 * x2 + 0.1191 * x - 0.00232;
+  return 15.5 * x4 * x2 - 40.14 * x4 * x + 31.96 * x4 - 6.868 * x2 * x + 0.4298 * x2 + 0.1191 * x - 0.00232;
 }
 vec3 AgXToneMapping( vec3 color ) {
   color *= toneMappingExposure;
-  color = AGX_SRGB_TO_REC2020 * color;
-  color = AGX_INSET * color;
-  color = max( color, vec3( 1e-10 ) );
-  color = log2( color );
-  color = ( color - AGX_MIN_EV ) / ( AGX_MAX_EV - AGX_MIN_EV );
-  color = clamp( color, 0.0, 1.0 );
-  color = agxContrast( color );
-  color = AGX_OUTSET * color;
-  color = pow( max( vec3( 0.0 ), color ), vec3( 2.2 ) );
-  color = AGX_REC2020_TO_SRGB * color;
+  color = AGX_INSET * ( AGX_SRGB_TO_REC2020 * color );
+  color = clamp( ( log2( max( color, vec3( 1e-10 ) ) ) - AGX_MIN_EV ) / ( AGX_MAX_EV - AGX_MIN_EV ), 0.0, 1.0 );
+  color = AGX_OUTSET * agxContrast( color );
+  color = AGX_REC2020_TO_SRGB * pow( max( vec3( 0.0 ), color ), vec3( 2.2 ) );
   return clamp( color, 0.0, 1.0 );
 }
 `;
-  // AgX doit être inséré APRÈS la déclaration de toneMappingExposure,
-  // c'est-à-dire à la place même de la fonction LinearToneMapping
-  const chunk = THREE.ShaderChunk.tonemapping_pars_fragment;
-  const remplace = chunk.replace(
-    /vec3 LinearToneMapping\( vec3 color \) \{[\s\S]*?\n\}/,
-    AGX_GLSL + '\nvec3 LinearToneMapping( vec3 color ) { return AgXToneMapping( color ); }');
-  if (remplace === chunk) { console.warn('AgX : greffe impossible, ACES conservé'); return; }
-  THREE.ShaderChunk.tonemapping_pars_fragment = remplace;
-  window.__agx = true;
-})();
+const chunkTM = THREE.ShaderChunk.tonemapping_pars_fragment;
+const chunkAgX = chunkTM.replace(/vec3 LinearToneMapping\( vec3 color \) \{[\s\S]*?\n\}/,
+  AGX_GLSL + '\nvec3 LinearToneMapping( vec3 color ) { return AgXToneMapping( color ); }');
+const agxOK = chunkAgX !== chunkTM;
+if (agxOK) THREE.ShaderChunk.tonemapping_pars_fragment = chunkAgX;
+else console.warn('AgX : greffe impossible, ACES conservé');
 
-const renderer = new THREE.WebGLRenderer({ antialias: RESOLUTION_PS1 >= 0.99 }); // lissage seulement en rendu net
+const renderer = new THREE.WebGLRenderer({ antialias: RESOLUTION >= 0.99 });  // lissage seulement en rendu net
 renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(RESOLUTION_PS1);      // rendu interne basse résolution, étiré à l'écran
-renderer.setClearColor(COULEUR_BROUILLARD);
-document.body.appendChild(renderer.domElement);
+renderer.setClearColor(BROUILLARD.couleur);
+renderer.outputEncoding = THREE.sRGBEncoding;                 // couleurs sRGB, comme Blender
+renderer.toneMapping = agxOK ? THREE.LinearToneMapping : THREE.ACESFilmicToneMapping;
+renderer.physicallyCorrectLights = true;                      // lampes en watts / candelas, comme Blender
 const canvas = renderer.domElement;
-if (RESOLUTION_PS1 < 0.99)
-  canvas.style.imageRendering = 'pixelated'; // agrandissement sans flou : gros pixels façon PS1
-
-/* ---------- éclairage intérieur : pénombre + lampes chaudes ---------- */
-const hemi = new THREE.HemisphereLight(LUMIERE_AMBIANTE_HAUT, LUMIERE_AMBIANTE_BAS, 0.78);
-scene.add(hemi);
-/* =====================================================================
-   JOUEUR : déplacements + collisions voxel
-   ===================================================================== */
-const joueur = {
-  x: DEPART_GLB.x,
-  z: DEPART_GLB.z,
-  y: 0,
-  vy: 0,
-  auSol: false,
-  yaw: DEPART_GLB.yaw,
-  pitch: DEPART_GLB.pitch || 0,
-};
-let camY = joueur.y + HAUTEUR_YEUX; // hauteur caméra lissée (adoucit les marches)
-
-/* ---------- physique dans le monde Blender : lancers de rayons ---------- */
-let mondeGLB = null;
-let dernierSol = null;   // dernier sol atteint normalement, pour rattraper une chute
-const rayonGLB = new THREE.Raycaster();
-function solGLB(x, z, depuisY) {
-  rayonGLB.set(new THREE.Vector3(x, depuisY, z), new THREE.Vector3(0, -1, 0));
-  rayonGLB.far = 60;
-  const hits = rayonGLB.intersectObjects(mondeGLB.collision, false);
-  return hits.length ? hits[0].point.y : null;
+document.body.appendChild(canvas);
+// Mobile : l'écran est petit et dense, le rendu à 0.8 px CSS rendait les textes des murs illisibles.
+// On rend donc à la vraie densité de pixels (plafonnée à 2) ; le desktop garde son gros pixel PS1.
+const ANISO = IS_MOBILE ? renderer.capabilities.getMaxAnisotropy() : 1;   // textes nets vus de biais (mobile)
+function reglerResolution(r) {   // rendu interne basse résolution, étiré à l'écran sans flou (gros pixels)
+  renderer.setPixelRatio(IS_MOBILE ? Math.min(r * (devicePixelRatio || 1), 2) : r);
+  canvas.style.imageRendering = r < 0.99 ? 'pixelated' : 'auto';
 }
-/* Trouve un vrai VOLUME habitable au-dessus de (x, z) : on descend un rayon
-   depuis le ciel, on relève tous les impacts, et on cherche le premier
-   intervalle vide d'au moins `creux` mètres — c'est une pièce, pas un toit.
-   Renvoie { sol, plafond } ou null. */
-function espaceGLB(x, z, creux) {
-  creux = creux || 1.9;
-  rayonGLB.set(new THREE.Vector3(x, 60, z), new THREE.Vector3(0, -1, 0));
-  rayonGLB.far = 130;
-  const hits = rayonGLB.intersectObjects(mondeGLB.collision, false);
-  if (!hits.length) return null;
-  // impacts du haut vers le bas ; on cherche plafond puis sol
-  for (let i = 0; i < hits.length - 1; i++) {
-    const haut = hits[i].point.y, bas = hits[i + 1].point.y;
-    if (haut - bas >= creux) return { sol: bas, plafond: haut };
-  }
-  // pas de plafond : sol à ciel ouvert
-  return { sol: hits[hits.length - 1].point.y, plafond: null };
-}
+reglerResolution(RESOLUTION);
 
-function murGLB(x, y, z, dx, dz, portee) {
-  rayonGLB.set(new THREE.Vector3(x, y, z), new THREE.Vector3(dx, 0, dz).normalize());
-  rayonGLB.far = portee;
-  return rayonGLB.intersectObjects(mondeGLB.collision, false).length > 0;
-}
-/* Distance libre au-dessus de (x, y, z) avant de cogner un plafond, ou null
-   s'il n'y a rien. Sans ce contrôle, un saut traverse les plafonds et le
-   visiteur se retrouve sur le toit, hors de l'architecture. */
-function plafondGLB(x, y, z, portee) {
-  rayonGLB.set(new THREE.Vector3(x, y, z), new THREE.Vector3(0, 1, 0));
-  rayonGLB.far = portee;
-  const hits = rayonGLB.intersectObjects(mondeGLB.collision, false);
-  return hits.length ? hits[0].distance : null;
-}
-function libreGLB(dx, dz, portee) { // rayons aux genoux et à la poitrine
-  return !murGLB(joueur.x, joueur.y + 0.55, joueur.z, dx, dz, portee) &&
-         !murGLB(joueur.x, joueur.y + 1.4, joueur.z, dx, dz, portee);
-}
-function majPhysiqueGLB(dx, dz, dt) {
-  const pas = Math.hypot(dx, dz);
-  if (pas > 1e-6) {
-    if (libreGLB(dx / pas, dz / pas, pas + RAYON_JOUEUR)) {
-      joueur.x += dx; joueur.z += dz;
-    } else { // glisse le long du mur, axe par axe
-      if (dx && libreGLB(Math.sign(dx), 0, Math.abs(dx) + RAYON_JOUEUR)) joueur.x += dx;
-      if (dz && libreGLB(0, Math.sign(dz), Math.abs(dz) + RAYON_JOUEUR)) joueur.z += dz;
-    }
-  }
-  // hauteur du sol sous les pieds, cherchée depuis la poitrine :
-  // les marches et pentes jusqu'à ~1,2 m se montent toutes seules
-  const s = solGLB(joueur.x, joueur.z, joueur.y + 1.2);
-  // en montée (saut) on ignore le sol, sinon l'impulsion serait annulée aussitôt
-  if (s !== null && s > joueur.y - 0.02 && joueur.vy <= 0) {
-    joueur.y = s; joueur.vy = 0; joueur.auSol = true;
-  } else {
-    joueur.vy -= GRAVITE * dt;
-    let ny = joueur.y + joueur.vy * dt;
-    if (joueur.vy > 0) {
-      // Plafond INFRANCHISSABLE. Le rayon part des PIEDS, pas de la tête :
-      // debout sur un meuble la tête peut déjà dépasser le plafond, et un
-      // rayon parti de là ne rencontrerait plus rien — c'est ainsi qu'on
-      // sortait sur le toit. Depuis les pieds, le plafond est toujours vu.
-      const pl = plafondGLB(joueur.x, joueur.y + 0.05, joueur.z, 40);
-      if (pl !== null) {
-        const hautPlafond = joueur.y + 0.05 + pl;
-        const yMax = hautPlafond - HAUTEUR_JOUEUR - 0.02;  // hauteur max des pieds
-        if (ny > yMax) { ny = Math.max(joueur.y, yMax); joueur.vy = 0; }
-      }
-    }
-    if (s !== null && ny <= s) { ny = s; joueur.vy = 0; joueur.auSol = true; }
-    else joueur.auSol = false;
-    joueur.y = ny;
-  }
-  // filet de sécurité : on retient le dernier sol foulé, et on y ramène
-  // le visiteur s'il finit par tomber dans le vide
-  if (joueur.auSol && joueur.vy === 0) dernierSol = { x: joueur.x, y: joueur.y, z: joueur.z };
-  if (joueur.y < -50) {
-    if (dernierSol) { joueur.x = dernierSol.x; joueur.y = dernierSol.y; joueur.z = dernierSol.z; joueur.vy = 0; }
-    else placerAuDepartGLB();
-  }
-}
-function placerAuDepartGLB() {
-  const dep = mondeGLB.racine.getObjectByName('spawn');
-  let px = DEPART_GLB.x, pz = DEPART_GLB.z, py = DEPART_GLB.y;
-  if (dep) {
-    const p = new THREE.Vector3();
-    dep.getWorldPosition(p);
-    px = p.x; pz = p.z; py = p.y;
-  }
-  joueur.x = px; joueur.z = pz; joueur.vy = 0;
-  joueur.yaw = DEPART_GLB.yaw; joueur.pitch = DEPART_GLB.pitch || 0;
-  // Quand on connaît la hauteur visée — celle de la caméra du .blend — on cherche
-  // le sol JUSTE EN DESSOUS. espaceGLB() part du ciel et s'arrêterait sur le
-  // premier volume libre venu : aux poolrooms c'est un toit, 5 m trop haut.
-  let sol = (py !== undefined && py !== null) ? solGLB(px, pz, py + 0.4) : null;
-  if (sol === null) {
-    const esp = espaceGLB(px, pz, 1.9);   // repli : le sol de la PIÈCE, pas le toit
-    sol = esp ? esp.sol : 2;
-  }
-  joueur.y = sol;
-  camY = joueur.y + HAUTEUR_YEUX;
-}
+const ambiante = new THREE.HemisphereLight(AMBIANTE_HAUT, AMBIANTE_BAS, AMBIANTE);
+scene.add(ambiante);
 
-function majJoueur(dt) {
-  // joystick tactile ET clavier/barre de commandes : les deux s'additionnent
-  let avant = 0, cote = 0;
-  if (IS_MOBILE) { avant = joyAvant; cote = joyCote; }
-  // 'KeyW' 'KeyX' 'KeyA' 'KeyD' désignent des EMPLACEMENTS de touche, pas des
-  // lettres : sur un clavier AZERTY ce sont Z, X, Q et D.
-  avant += (touches.has('KeyW') || touches.has('ArrowUp') ? 1 : 0)
-         - (touches.has('KeyX') || touches.has('KeyS') || touches.has('ArrowDown') ? 1 : 0);
-  cote  += (touches.has('KeyD') || touches.has('ArrowRight') ? 1 : 0)
-         - (touches.has('KeyA') || touches.has('ArrowLeft') ? 1 : 0);
-  const len = Math.hypot(avant, cote);
-  if (len > 1) { avant /= len; cote /= len; }
-
-  const sy = Math.sin(joueur.yaw), cy = Math.cos(joueur.yaw);
-  // yaw=0 → regarde vers -z ; droite = +x
-  const dx = (-sy * avant + cy * cote) * VITESSE * dt;
-  const dz = (-cy * avant - sy * cote) * VITESSE * dt;
-
-  // saut : uniquement les pieds au sol, sinon on volerait en tapotant
-  if (FORCE_SAUT > 0 && joueur.auSol && touches.has('Space')) {
-    joueur.vy = FORCE_SAUT; joueur.auSol = false;
-  }
-
-  // le monde Blender fournit le sol et les murs : rien à faire tant qu'il n'est pas monté
-  if (mondeGLB) majPhysiqueGLB(dx, dz, dt);
-
-  // caméra (hauteur lissée pour adoucir les marches d'un bloc)
-  camY += (joueur.y + HAUTEUR_YEUX - camY) * Math.min(1, 14 * dt);
-  camera.position.set(joueur.x, camY, joueur.z);
-  camera.rotation.set(joueur.pitch, joueur.yaw, 0);
-}
+addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
 
 /* =====================================================================
-   ÉTAT DE L'INTERFACE
+   INTERFACE : accueil, bandeau d'état, barre de commandes, pause, overlays
    ===================================================================== */
-const elIntro = document.getElementById('intro');
-const elHint = document.getElementById('hint');
-const elCrosshair = document.getElementById('crosshair');
-const elEtat = document.getElementById('etat');
-let demarre = false, verrouille = false;
+const el = (id) => document.getElementById(id);
+const elIntro = el('intro'), elViseur = el('viseur'), elInvite = el('invite'), elEtat = el('etat'),
+      elBarre = el('barre'), elPause = el('pause');
+let demarre = false;     // le visiteur a cliqué sur l'accueil
+let verrouille = false;  // la souris est capturée par le canvas
+let enPause = false;
+const touches = new Set();   // touches physiques enfoncées (clavier + boutons de la barre)
 
-/* ---------- bandeau d'état : progression du chargement, puis erreurs ---------- */
+/* bandeau d'état : progression du chargement, puis message d'erreur avec « Réessayer » */
 function majEtat(texte, echec) {
-  if (!elEtat) return;
-  if (!texte) { elEtat.style.display = 'none'; return; }
-  elEtat.style.display = 'block';
+  elEtat.style.display = texte ? 'block' : 'none';
   elEtat.textContent = texte;
   if (echec) {
     const b = document.createElement('button');
     b.textContent = 'Réessayer';
     b.addEventListener('click', () => location.reload());
-    elEtat.appendChild(document.createElement('br'));
-    elEtat.appendChild(b);
+    elEtat.append(document.createElement('br'), b);
   }
 }
 
+/* viseur, invite et barre selon l'état. Sous capture, TOUS les clics vont au canvas :
+   la barre serait incliquable, on la retire ; Échap rend la souris et la barre revient. */
+function majOverlays() {
+  elViseur.style.display = (!IS_MOBILE && demarre && verrouille) ? 'block' : 'none';
+  elInvite.style.display = (!IS_MOBILE && demarre && !verrouille && !enPause) ? 'block' : 'none';
+  if (demarre) elBarre.style.display = (IS_MOBILE || !verrouille) ? 'flex' : 'none';
+}
+
+function basculerPause(v) {
+  enPause = v === undefined ? !enPause : !!v;
+  elPause.style.display = enPause ? 'flex' : 'none';
+  touches.clear();                                                   // aucune touche ne reste coincée
+  if (enPause && document.pointerLockElement) document.exitPointerLock();
+  majOverlays();
+}
+
+el('intro-titre').textContent = TITRE;
+el('intro-enter').textContent = IS_MOBILE ? 'Touchez pour entrer' : 'Cliquez pour entrer';
+el('intro-ctrl').textContent = IS_MOBILE
+  ? 'Joystick pour marcher · glissez pour regarder · boutons en haut pour sauter'
+  : 'Z avancer · X reculer · Q et D sur les côtés (ou les flèches) · souris pour regarder · Espace pour sauter · Échap pour mettre pause';
+elIntro.addEventListener('click', () => {
+  demarre = true;
+  elIntro.style.display = 'none';
+  // ce clic est le geste que le navigateur exige pour accorder la capture de la souris
+  if (CAPTURE_IMMEDIATE && !IS_MOBILE) verrouillerPointeur();
+  majOverlays();
+});
+
+// chaque bouton de la barre simule sa touche tant qu'on le maintient enfoncé
+elBarre.querySelectorAll('button[data-touche]').forEach((b) => {
+  const presse  = (e) => { e.preventDefault(); touches.add(b.dataset.touche); b.classList.add('actif'); };
+  const relache = () => { touches.delete(b.dataset.touche); b.classList.remove('actif'); };
+  b.addEventListener('pointerdown', presse);
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach((ev) => b.addEventListener(ev, relache));
+});
+el('b-pause').addEventListener('click', () => basculerPause(true));
+// « retour » : dans l'iframe du portfolio, on demande au site parent de refermer l'habillage ;
+// en plein onglet, on revient simplement en arrière
+el('b-retour').addEventListener('click', () => {
+  if (window.parent !== window) window.parent.postMessage('fermer-3d', '*');
+  else history.back();
+});
+elPause.addEventListener('click', () => basculerPause(false));  // le bouton « Reprendre » est dedans
+
 /* =====================================================================
-   CONTRÔLES — DESKTOP (pointer lock + clavier)
+   CONTRÔLES — clavier + souris (capture du pointeur), puis tactile
    ===================================================================== */
-const touches = new Set();
 addEventListener('keydown', (e) => {
   if (e.code === 'Escape') { if (!enPause) basculerPause(true); return; }
-  if (e.code === 'Space') e.preventDefault();  // n'active pas un bouton qui aurait le focus
+  if (e.code === 'Space') e.preventDefault();    // n'active pas un bouton qui aurait le focus
   touches.add(e.code);
 });
-addEventListener('keyup', (e) => { touches.delete(e.code); });
+addEventListener('keyup', (e) => touches.delete(e.code));
 addEventListener('blur', () => touches.clear());
 
-function verrouillerPointeur() {
-  try { canvas.requestPointerLock(); } catch (e) { /* non supporté : tant pis */ }
-}
+function verrouillerPointeur() { try { canvas.requestPointerLock(); } catch (e) { /* non supporté */ } }
 document.addEventListener('pointerlockchange', () => {
-  verrouille = (document.pointerLockElement === canvas);
-  // une capture accordée en retard, pendant la pause, rendrait l'écran de pause
-  // incliquable : la souris irait au canvas quelle que soit sa position
+  verrouille = document.pointerLockElement === canvas;
+  // une capture accordée en retard, pendant la pause, rendrait l'écran de pause incliquable
   if (verrouille && enPause) { document.exitPointerLock(); return; }
   // Échap rend la souris au système : on en profite pour mettre la visite en pause
   if (!verrouille && demarre && !IS_MOBILE) basculerPause(true);
@@ -636,373 +370,357 @@ document.addEventListener('mousemove', (e) => {
   joueur.yaw -= e.movementX * 0.0022;
   joueur.pitch = Math.max(-1.35, Math.min(1.35, joueur.pitch - e.movementY * 0.0022));
 });
-canvas.addEventListener('mousedown', () => {
-  if (IS_MOBILE || !demarre || enPause) return;
-  if (!verrouille) verrouillerPointeur();     // capture la souris
+canvas.addEventListener('mousedown', () => {   // un clic dans l'image reprend la souris (pas pendant la pause)
+  if (!IS_MOBILE && demarre && !enPause && !verrouille) verrouillerPointeur();
 });
 
-/* =====================================================================
-   CONTRÔLES — MOBILE (joystick + regard tactile + tap)
-   ===================================================================== */
-let joyAvant = 0, joyCote = 0;
-const elJoy = document.getElementById('joystick');
-const elStick = document.getElementById('stick');
+// --- mobile : joystick à gauche, regard au doigt sur le reste de l'écran ---
+let joyAvant = 0, joyCote = 0, joyDoigt = null;
+const elJoy = el('joystick'), elStick = el('stick');
 if (IS_MOBILE) elJoy.style.display = 'block';
-
-let joyTouchId = null;
 elJoy.addEventListener('touchstart', (e) => {
   e.preventDefault(); e.stopPropagation();
-  if (joyTouchId === null) joyTouchId = e.changedTouches[0].identifier;
+  if (joyDoigt === null) joyDoigt = e.changedTouches[0].identifier;
 }, { passive: false });
 elJoy.addEventListener('touchmove', (e) => {
   e.preventDefault(); e.stopPropagation();
   for (const t of e.changedTouches) {
-    if (t.identifier !== joyTouchId) continue;
-    const r = elJoy.getBoundingClientRect();
-    let dx = t.clientX - (r.left + r.width / 2);
-    let dy = t.clientY - (r.top + r.height / 2);
-    const d = Math.hypot(dx, dy), max = 40;
-    if (d > max) { dx = dx / d * max; dy = dy / d * max; }
+    if (t.identifier !== joyDoigt) continue;
+    const r = elJoy.getBoundingClientRect(), max = 40;
+    let dx = t.clientX - (r.left + r.width / 2), dy = t.clientY - (r.top + r.height / 2);
+    const d = Math.hypot(dx, dy);
+    if (d > max) { dx *= max / d; dy *= max / d; }
     elStick.style.transform = `translate(${dx}px,${dy}px)`;
-    joyCote = dx / max;
-    joyAvant = -dy / max;
+    joyCote = dx / max; joyAvant = -dy / max;
   }
 }, { passive: false });
-function finJoy(e) {
-  for (const t of e.changedTouches) {
-    if (t.identifier !== joyTouchId) continue;
-    joyTouchId = null; joyAvant = 0; joyCote = 0;
-    elStick.style.transform = '';
+const finJoy = (e) => {
+  for (const t of e.changedTouches) if (t.identifier === joyDoigt) {
+    joyDoigt = null; joyAvant = joyCote = 0; elStick.style.transform = '';
   }
-}
+};
 elJoy.addEventListener('touchend', finJoy);
 elJoy.addEventListener('touchcancel', finJoy);
 
-// regard tactile (sur le reste de l'écran)
-const regards = new Map(); // id -> infos du doigt
+const doigts = new Map();   // id du doigt → dernière position
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
-  for (const t of e.changedTouches)
-    regards.set(t.identifier, { x: t.clientX, y: t.clientY, sx: t.clientX, sy: t.clientY, t0: performance.now(), bouge: false });
+  for (const t of e.changedTouches) doigts.set(t.identifier, { x: t.clientX, y: t.clientY });
 }, { passive: false });
 canvas.addEventListener('touchmove', (e) => {
   e.preventDefault();
   for (const t of e.changedTouches) {
-    const r = regards.get(t.identifier);
-    if (!r) continue;
-    const dx = t.clientX - r.x, dy = t.clientY - r.y;
-    joueur.yaw -= dx * 0.005;
-    joueur.pitch = Math.max(-1.35, Math.min(1.35, joueur.pitch - dy * 0.005));
-    r.x = t.clientX; r.y = t.clientY;
-    if (Math.hypot(t.clientX - r.sx, t.clientY - r.sy) > 12) r.bouge = true;
+    const d = doigts.get(t.identifier);
+    if (!d) continue;
+    joueur.yaw -= (t.clientX - d.x) * 0.005;
+    joueur.pitch = Math.max(-1.35, Math.min(1.35, joueur.pitch - (t.clientY - d.y) * 0.005));
+    d.x = t.clientX; d.y = t.clientY;
   }
 }, { passive: false });
-canvas.addEventListener('touchend', (e) => {
-  for (const t of e.changedTouches) regards.delete(t.identifier);
-});
+canvas.addEventListener('touchend', (e) => { for (const t of e.changedTouches) doigts.delete(t.identifier); });
 
 /* =====================================================================
-   ÉCRAN D'ACCUEIL + overlays
+   PHYSIQUE : le monde Blender fournit sols, murs et plafonds par lancers de rayons
    ===================================================================== */
-document.getElementById('intro-titre').textContent = TITRE_PORTFOLIO;
-document.getElementById('intro-enter').textContent = IS_MOBILE ? 'Touchez pour entrer' : 'Cliquez pour entrer';
-document.getElementById('intro-ctrl').textContent = IS_MOBILE
-  ? 'Joystick pour marcher · glissez pour regarder · boutons en haut pour sauter'
-  : 'Z avancer · X reculer · Q et D sur les côtés (ou les flèches) · souris pour regarder · Espace pour sauter · Échap pour mettre pause';
+let mondeGLB = null;       // { racine, collision: [maillages solides] } une fois le .glb monté
+let dernierSol = null;     // dernier sol foulé : on y revient après une chute dans le vide
+const rayon = new THREE.Raycaster();
+const _o = new THREE.Vector3(), _d = new THREE.Vector3();
 
-elIntro.addEventListener('click', () => {
-  demarre = true;
-  elIntro.style.display = 'none';
-  elBarre.style.display = 'flex';
-  // Le clic sur l'accueil EST le geste utilisateur qu'exige le navigateur pour
-  // accorder la capture : c'est le seul endroit où on peut la demander sans que
-  // le visiteur ait à cliquer une deuxième fois.
-  if (CAPTURE_IMMEDIATE && !IS_MOBILE) verrouillerPointeur();
-  majOverlays();
-});
-
-function majOverlays() {
-  elCrosshair.style.display = (!IS_MOBILE && demarre && verrouille) ? 'block' : 'none';
-  elHint.style.display = (!IS_MOBILE && demarre && !verrouille && !enPause) ? 'block' : 'none';
-  // Sous capture, un clic sur la barre partirait au canvas : autant la retirer.
-  // Échap rend la souris (et met en pause), la barre revient avec elle.
-  if (demarre && !IS_MOBILE) elBarre.style.display = verrouille ? 'none' : 'flex';
+/* impacts sur les solides depuis (x, y, z) dans la direction (dx, dy, dz), du plus proche au plus loin */
+function lancer(x, y, z, dx, dy, dz, portee) {
+  rayon.set(_o.set(x, y, z), _d.set(dx, dy, dz).normalize());
+  rayon.far = portee;
+  return rayon.intersectObjects(mondeGLB.collision, false);
+}
+/* hauteur du sol sous (x, z), cherchée vers le bas depuis depuisY ; null si rien */
+function solGLB(x, z, depuisY) {
+  const h = lancer(x, depuisY, z, 0, -1, 0, 60);
+  return h.length ? h[0].point.y : null;
+}
+/* un mur bloque-t-il le visiteur dans la direction (dx, dz) à moins de portee ? rayons aux genoux et à la poitrine */
+function murGLB(dx, dz, portee) {
+  return lancer(joueur.x, joueur.y + 0.55, joueur.z, dx, 0, dz, portee).length > 0
+      || lancer(joueur.x, joueur.y + 1.4,  joueur.z, dx, 0, dz, portee).length > 0;
+}
+/* volume habitable au-dessus de (x, z) : on descend un rayon depuis le ciel et on cherche
+   le premier intervalle vide d'au moins `creux` mètres — une pièce, pas un toit.
+   Renvoie { sol, plafond } (plafond null à ciel ouvert), ou null s'il n'y a rien. */
+function espaceGLB(x, z, creux = 1.9) {
+  const h = lancer(x, 60, z, 0, -1, 0, 130);
+  if (!h.length) return null;
+  for (let i = 0; i < h.length - 1; i++)
+    if (h[i].point.y - h[i + 1].point.y >= creux) return { sol: h[i + 1].point.y, plafond: h[i].point.y };
+  return { sol: h[h.length - 1].point.y, plafond: null };
 }
 
 /* =====================================================================
-   BARRE DE COMMANDES + ÉCRAN DE PAUSE
+   VISITEUR
    ===================================================================== */
-let enPause = false;
-const elBarre = document.getElementById('barre');
-const elPause = document.getElementById('pause');
+const joueur = { x: DEPART_GLB.x, y: 0, z: DEPART_GLB.z, vy: 0, auSol: false, yaw: DEPART_GLB.yaw, pitch: DEPART_GLB.pitch };
+let camY = HAUTEUR_YEUX;   // hauteur des yeux lissée (adoucit les marches)
 
-function basculerPause(v) {
-  enPause = (v === undefined) ? !enPause : !!v;
-  elPause.style.display = enPause ? 'flex' : 'none';
-  touches.clear();                                   // aucune touche ne reste coincée
-  if (enPause && document.pointerLockElement) document.exitPointerLock();
-  majOverlays();
-}
-
-function reprendre() {
-  basculerPause(false);   // on ne recapture pas la souris : clic dans l'image pour ça
-}
-
-(function barreCommandes() {
-  // chaque bouton simule la touche de son data-touche, tant qu'on le maintient enfoncé
-  elBarre.querySelectorAll('button[data-touche]').forEach((b) => {
-    const code = b.dataset.touche;
-    const presse  = (e) => { e.preventDefault(); touches.add(code); b.classList.add('actif'); };
-    const relache = () => { touches.delete(code); b.classList.remove('actif'); };
-    b.addEventListener('pointerdown', presse);
-    b.addEventListener('pointerup', relache);
-    b.addEventListener('pointerleave', relache);
-    b.addEventListener('pointercancel', relache);
-  });
-  document.getElementById('b-pause').addEventListener('click', () => basculerPause(true));
-  // « retour » : en iframe (le bloc 3D du portfolio), history.back() resterait
-  // coincé dans l'iframe — on demande au site parent de refermer l'habillage.
-  // En plein onglet (mobile, ou « ouvrir dans un onglet »), comportement d'avant.
-  document.getElementById('b-retour').addEventListener('click', () => {
-    if (window.parent !== window) {
-      window.parent.postMessage('fermer-3d', '*');
-      return;
+function majPhysique(dx, dz, dt) {
+  const pas = Math.hypot(dx, dz);
+  if (pas > 1e-6) {
+    if (!murGLB(dx / pas, dz / pas, pas + RAYON_JOUEUR)) { joueur.x += dx; joueur.z += dz; }
+    else {   // glisse le long du mur, axe par axe
+      if (dx && !murGLB(Math.sign(dx), 0, Math.abs(dx) + RAYON_JOUEUR)) joueur.x += dx;
+      if (dz && !murGLB(0, Math.sign(dz), Math.abs(dz) + RAYON_JOUEUR)) joueur.z += dz;
     }
-    history.back();
-  });
-  elPause.addEventListener('click', reprendre);      // le bouton « Reprendre » est dedans
-})();
-
-/* =====================================================================
-   BOUCLE PRINCIPALE
-   ===================================================================== */
-addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
-
-/* =====================================================================
-   MONDE BLENDER — si maison.glb est présent, il remplace le décor généré
-   ===================================================================== */
-/* ---------------------------------------------------------------------
-   Éclairage, fumée et grain PS1 — tout ce qui se règle sans Blender
-   --------------------------------------------------------------------- */
-const lampesGLB = [];      // les lampes Point venues du .blend
-const matsEmissifs = [];   // les matériaux qui s'éclairent tout seuls
-const matsCiels = [];          // plafonds de ciel — pilotés par LUMIERE_CIELS
-const matsPlafondsPleins = []; // plafonds pleins — pilotés par LUMIERE_PLAFONDS
-let mixerGLB = null;            // lecteur des animations du .glb
-const lampesPoolrooms = [];     // les lampes de la salle des poolrooms
-const matsPoolrooms = [];       // les matériaux qui ne servent QUE dans cette salle
-
-/* Un point est-il dans la salle des poolrooms ? */
-function dansPoolrooms(p) {
-  const z = ZONE_POOLROOMS;
-  return p.x >= z.x[0] && p.x <= z.x[1] && p.y >= z.y[0] && p.y <= z.y[1]
-      && p.z >= z.z[0] && p.z <= z.z[1];
+  }
+  // sol sous les pieds, cherché depuis la poitrine : marches et pentes jusqu'à ~1,2 m se montent seules.
+  // En montée (saut) on ignore le sol, sinon l'impulsion serait annulée à l'image suivante.
+  const s = solGLB(joueur.x, joueur.z, joueur.y + 1.2);
+  if (s !== null && s > joueur.y - 0.02 && joueur.vy <= 0) {
+    joueur.y = s; joueur.vy = 0; joueur.auSol = true;
+  } else {
+    joueur.vy -= GRAVITE * dt;
+    let ny = joueur.y + joueur.vy * dt;
+    if (joueur.vy > 0) {
+      // plafond infranchissable. Le rayon part des PIEDS, pas de la tête : debout sur un meuble,
+      // la tête dépasse déjà le plafond et un rayon parti de là ne rencontrerait plus rien.
+      const h = lancer(joueur.x, joueur.y + 0.05, joueur.z, 0, 1, 0, 40);
+      if (h.length) {
+        const yMax = h[0].point.y - HAUTEUR_JOUEUR - 0.02;   // hauteur max des pieds
+        if (ny > yMax) { ny = Math.max(joueur.y, yMax); joueur.vy = 0; }
+      }
+    }
+    if (s !== null && ny <= s) { ny = s; joueur.vy = 0; joueur.auSol = true; }
+    else joueur.auSol = false;
+    joueur.y = ny;
+  }
+  if (joueur.auSol) dernierSol = { x: joueur.x, y: joueur.y, z: joueur.z };
+  if (joueur.y < -50) {   // tombé dans le vide : retour au dernier sol connu
+    if (dernierSol) Object.assign(joueur, dernierSol, { vy: 0 });
+    else placerAuDepart();
+  }
 }
 
-/* Un plafond se reconnaît à son nom d'objet, ou à celui d'un de ses parents si
-   l'export glTF a emboité le maillage sous un vide. */
+function placerAuDepart() {
+  const spawn = mondeGLB.racine.getObjectByName('spawn');
+  const p = spawn ? spawn.getWorldPosition(new THREE.Vector3()) : DEPART_GLB;
+  Object.assign(joueur, { x: p.x, z: p.z, vy: 0, yaw: DEPART_GLB.yaw, pitch: DEPART_GLB.pitch });
+  // le sol JUSTE SOUS la hauteur visée. espaceGLB() part du ciel et s'arrêterait sur le
+  // premier volume libre : aux poolrooms c'est un toit, 5 m trop haut. Repli si rien.
+  let sol = solGLB(p.x, p.z, p.y + 0.4);
+  if (sol === null) { const e = espaceGLB(p.x, p.z); sol = e ? e.sol : 2; }
+  joueur.y = sol;
+  camY = sol + HAUTEUR_YEUX;
+}
+
+function majJoueur(dt) {
+  // clavier / barre et joystick s'additionnent. 'KeyW' 'KeyX' 'KeyA' 'KeyD' sont des
+  // EMPLACEMENTS physiques de touches : Z, X, Q et D sur un clavier AZERTY.
+  const t = (code) => (touches.has(code) ? 1 : 0);
+  let avant = joyAvant + t('KeyW') + t('ArrowUp') - t('KeyX') - t('KeyS') - t('ArrowDown');
+  let cote  = joyCote  + t('KeyD') + t('ArrowRight') - t('KeyA') - t('ArrowLeft');
+  const n = Math.hypot(avant, cote);
+  if (n > 1) { avant /= n; cote /= n; }
+  const sy = Math.sin(joueur.yaw), cy = Math.cos(joueur.yaw);   // yaw 0 → regarde vers −z, droite = +x
+  const dx = (-sy * avant + cy * cote) * VITESSE * dt;
+  const dz = (-cy * avant - sy * cote) * VITESSE * dt;
+
+  if (FORCE_SAUT > 0 && joueur.auSol && touches.has('Space')) { joueur.vy = FORCE_SAUT; joueur.auSol = false; }
+  if (mondeGLB) majPhysique(dx, dz, dt);   // rien à faire tant que le monde n'est pas monté
+
+  camY += (joueur.y + HAUTEUR_YEUX - camY) * Math.min(1, 14 * dt);
+  camera.position.set(joueur.x, camY, joueur.z);
+  camera.rotation.set(joueur.pitch, joueur.yaw, 0);
+}
+
+/* =====================================================================
+   MONDE BLENDER : chargement du .glb, classement, lumière, eau, fumée, animations
+   ===================================================================== */
+const lampes = [], lampesPoolrooms = [], matsPoolrooms = [];
+const matsCiels = [], matsPlafondsPleins = [];   // copies privées des matériaux de plafond
+const eaux = [];                                 // { mesh, origine, teinte }
+let mixer = null;                                // lecteur des animations
+const bilan = {};                                // ce qui a été reconnu au chargement
+
+const materiaux = (o) => (Array.isArray(o.material) ? o.material : [o.material]).filter(Boolean);
+const dansPoolrooms = (p) => {
+  const z = ZONE_POOLROOMS;
+  return p.x >= z.x[0] && p.x <= z.x[1] && p.y >= z.y[0] && p.y <= z.y[1] && p.z >= z.z[0] && p.z <= z.z[1];
+};
+/* plafond : nom d'objet qui COMMENCE par « plafond » (pas « contient » : SM_ceiling_window est un
+   meuble), sur l'objet ou un de ses parents — l'export glTF emboîte parfois le maillage sous un vide */
 function estPlafond(o) {
-  // « commence par plafond » et non « contient » : sinon le cadre de fenêtre de
-  // toit « SM_ceiling_window » (un meuble) se mettrait à luire comme une dalle.
-  for (let n = o; n; n = n.parent) if (/^plafond/i.test(n.name || '')) return true;
+  for (let n = o; n; n = n.parent) if (/^plafond/i.test(n.name)) return true;
   return false;
 }
-/* Ciel ou plafond plein ? Le nom de l'objet tranche, sinon celui du matériau :
-   « cielPlafond1 » est bien un ciel, même posé sur « plafond_piece03 ». */
-function estCiel(o, m) {
-  const nm = (m && m.name) || '';
-  return MOTS_CIEL.test(o.name || '') || MOTS_CIEL.test(nm)
-      || CIELS_EN_PLUS.indexOf(nm) >= 0;
+const estCiel = (o, m) => MOTS_CIEL.test(o.name) || MOTS_CIEL.test(m.name) || CIELS_EN_PLUS.includes(m.name);
+const estEau  = (o, m) => /^(eau|water)/i.test(o.name) || /^(eau|water)/i.test(m.name);
+
+function monterMonde(gltf) {
+  const racine = gltf.scene;
+  mondeGLB = { racine, collision: [] };
+
+  // ce qu'un clip anime (le requin sur son trajet, par exemple) ne doit pas bloquer le visiteur
+  const animes = new Set();
+  gltf.animations.forEach((clip) => clip.tracks.forEach((t) => animes.add(THREE.PropertyBinding.parseTrackName(t.name).nodeName)));
+  const estAnime = (o) => {
+    for (let n = o; n; n = n.parent) if (n.isSkinnedMesh || animes.has(n.name)) return true;
+    return false;
+  };
+
+  const squelettes = new Set();
+  racine.traverse((o) => {
+    if (o.isLight) { lampes.push(o); return; }
+    if (!o.isMesh) return;
+    if (o.isSkinnedMesh) {
+      // three.js décide d'afficher un personnage d'après une sphère calculée sur la pose AU REPOS :
+      // posé ou animé autrement, il disparaîtrait par morceaux selon l'angle de caméra
+      o.frustumCulled = false;
+      squelettes.add(o.skeleton.bones[0]);   // un squelette = un os racine (plusieurs maillages le partagent)
+    }
+    const plafond = estPlafond(o);
+    // un plafond reçoit une COPIE de son matériau : sa lumière lui est propre, sans éclairer
+    // un mur qui partagerait le même matériau
+    if (plafond) o.material = Array.isArray(o.material) ? o.material.map((m) => m && m.clone()) : o.material && o.material.clone();
+    const mats = materiaux(o);
+    mats.forEach((m) => { m.side = THREE.DoubleSide; });   // murs en plans simples, visibles des deux côtés
+    if (plafond) {
+      mats.forEach((m) => { const liste = estCiel(o, m) ? matsCiels : matsPlafondsPleins; if (!liste.includes(m)) liste.push(m); });
+    } else if (mats[0] && estEau(o, mats[0])) {
+      // eau : matériau NON éclairé préparé ici, l'original gardé de côté (__debug.eau(null) le restitue)
+      eaux.push({ mesh: o, origine: o.material, teinte: new THREE.MeshBasicMaterial({
+        transparent: true, opacity: mats[0].opacity, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }) });
+      return;   // et traversable : pas dans les solides
+    }
+    if (!estAnime(o)) mondeGLB.collision.push(o);
+  });
+  scene.add(racine);
+  racine.updateMatrixWorld(true);
+
+  // ce qui appartient à la salle des poolrooms. Un matériau aussi utilisé AILLEURS est exclu, sinon
+  // éclairer la salle éclairerait ailleurs. Repère : centre de la sphère englobante, pas l'origine
+  // de l'objet (beaucoup d'objets ont leur origine à 0, 0, 0).
+  const usage = new Map(), p = new THREE.Vector3();
+  racine.traverse((o) => {
+    if (o.isLight) { if (dansPoolrooms(o.getWorldPosition(p))) lampesPoolrooms.push(o); return; }
+    if (!o.isMesh || !o.geometry) return;
+    if (ANISO > 1) materiaux(o).forEach((m) => { if (m.map && m.map.anisotropy !== ANISO) { m.map.anisotropy = ANISO; m.map.needsUpdate = true; } });
+    if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
+    const dedans = dansPoolrooms(p.copy(o.geometry.boundingSphere.center).applyMatrix4(o.matrixWorld));
+    materiaux(o).forEach((m) => {
+      const u = usage.get(m) || { dedans: false, dehors: false };
+      u[dedans ? 'dedans' : 'dehors'] = true;
+      usage.set(m, u);
+    });
+  });
+  usage.forEach((u, m) => { if (u.dedans && !u.dehors) matsPoolrooms.push(m); });
+
+  // animations : sans lecteur, les squelettes resteraient sur les transformations par défaut du glTF
+  if (gltf.animations.length) {
+    mixer = new THREE.AnimationMixer(racine);
+    gltf.animations.forEach((clip) => mixer.clipAction(clip).play());
+  }
+
+  appliquerLumiere();
+  placerAuDepart();
+  if (FUMEE_ACTIVE) construireFumee();
+
+  let maillages = 0;
+  racine.traverse((o) => { if (o.isMesh) maillages++; });
+  Object.assign(bilan, {
+    fichier: FICHIER_GLB, maillages, solides: mondeGLB.collision.length, lampes: lampes.length,
+    plafonds: { ciels: matsCiels.length, pleins: matsPlafondsPleins.length }, nappesEau: eaux.length,
+    animations: gltf.animations.map((c) => c.name), squelettes: squelettes.size,
+    poolrooms: { lampes: lampesPoolrooms.length, materiaux: matsPoolrooms.length },
+    spawn: !!racine.getObjectByName('spawn'),
+  });
+  console.info('monde monté', bilan);
 }
+
+/* lampes, matériaux des poolrooms, plafonds, ambiance, exposition, eau — rejouable à chaud */
+function appliquerLumiere() {
+  lampes.forEach((l) => {
+    if (l.userData.i0 === undefined) l.userData.i0 = l.intensity;   // puissance Blender, mémorisée une fois
+    l.decay = 2; l.distance = 0;                                     // atténuation physique, portée illimitée
+    // genou doux plutôt qu'une coupe nette : une lampe faible passe intacte, une forte
+    // s'approche de PLAFOND_LAMPES sans l'atteindre — l'écart entre les lampes reste lisible
+    const brut = l.userData.i0 * ECHELLE_LAMPES;
+    l.intensity = PLAFOND_LAMPES * (1 - Math.exp(-brut / PLAFOND_LAMPES)) * (lampesPoolrooms.includes(l) ? LUMIERE_POOLROOMS : 1);
+  });
+  matsPoolrooms.forEach((m) => {
+    if (m.emissiveIntensity === undefined) return;
+    if (m.userData.e0 === undefined) m.userData.e0 = m.emissiveIntensity;
+    m.emissiveIntensity = m.userData.e0 * EMISSIF_POOLROOMS;
+  });
+  // plafonds : l'émission est refaite à partir de la texture (ou d'une teinte neutre). 0 = export brut.
+  [[matsCiels, LUMIERE_CIELS], [matsPlafondsPleins, LUMIERE_PLAFONDS]].forEach(([liste, force]) => liste.forEach((m) => {
+    if (!m.emissive) return;
+    if (!m.userData.p0) m.userData.p0 = { e: m.emissive.clone(), map: m.emissiveMap || null, i: m.emissiveIntensity };
+    const d = m.userData.p0;
+    if (!(force > 0)) { m.emissive.copy(d.e); m.emissiveMap = d.map; m.emissiveIntensity = d.i; }
+    else {
+      m.emissiveMap = d.map || m.map || null;
+      if (m.emissiveMap) m.emissive.setRGB(force, force, force);
+      else if (m.color.r + m.color.g + m.color.b < 0.02) m.emissive.set(TEINTE_PLAFOND_NU).multiplyScalar(force);  // base noire dans le .blend
+      else m.emissive.copy(m.color).multiplyScalar(force);
+      m.emissiveIntensity = 1;
+    }
+    m.needsUpdate = true;   // ajouter ou retirer une emissiveMap change le shader
+  }));
+  ambiante.intensity = AMBIANTE;
+  renderer.toneMappingExposure = EXPO_LUMIERE;
+  appliquerEau();
+}
+
+function appliquerEau() {
+  eaux.forEach(({ mesh, origine, teinte }) => {
+    if (COULEUR_EAU === null) { mesh.material = origine; return; }
+    teinte.color.set(COULEUR_EAU).multiplyScalar(LUMINOSITE_EAU);
+    teinte.opacity = OPACITE_EAU;
+    mesh.material = teinte;
+  });
+}
+
+/* --- fumée : billboards immobiles (THREE.Sprite fait toujours face à la caméra) --- */
 const groupeFumee = new THREE.Group();
-groupeFumee.name = 'fumee_ps1';
 scene.add(groupeFumee);
 
-function appliquerModeLumiere() {
-  const emissif = (MODE_LUMIERE === 'emissif');
-  const plat    = (MODE_LUMIERE === 'plat');
-  lampesGLB.forEach((o) => {
-    if (o.userData.i0 === undefined) o.userData.i0 = o.intensity;
-    o.decay = 2;     // atténuation physique, comme dans Blender
-    o.distance = 0;  // portée illimitée
-    if (plat) { o.visible = false; return; }
-    o.visible = true;
-    const ech  = emissif ? 0.10 : ECHELLE_LAMPES_GLB;
-    const plaf = emissif ? 220  : PLAFOND_LAMPES_GLB;
-    // Genou doux au lieu d'une coupe nette. Math.min() ramenait les quatre plus
-    // grosses lampes à la MÊME valeur : d'où l'impression de lumière plate.
-    // Ici une lampe faible passe intacte, une forte s'approche du plafond sans
-    // jamais l'atteindre — l'écart entre tes lampes reste lisible.
-    const brut = o.userData.i0 * ech;
-    o.intensity = plaf * (1 - Math.exp(-brut / plaf));
-  });
-  const boost = (plat ? 2.4 : (emissif ? 1.8 : 1.0)) * BOOST_CIELS;
-  matsEmissifs.forEach((m) => {
-    if (m.userData.e0 === undefined) m.userData.e0 = (m.emissiveIntensity === undefined ? 1 : m.emissiveIntensity);
-    m.emissiveIntensity = m.userData.e0 * boost;
-    m.needsUpdate = true;
-  });
-  // ---- la salle des poolrooms, par-dessus le reste ----
-  // Les deux boucles ci-dessus ont déjà posé intensité et émission ; on ne fait
-  // que les multiplier pour ce qui appartient à la salle.
-  if (LUMIERE_POOLROOMS !== 1) lampesPoolrooms.forEach((o) => { o.intensity *= LUMIERE_POOLROOMS; });
-  if (EMISSIF_POOLROOMS !== 1) matsPoolrooms.forEach((m) => {
-    if (m.emissiveIntensity !== undefined) { m.emissiveIntensity *= EMISSIF_POOLROOMS; m.needsUpdate = true; }
-  });
-
-  // ---- lumière propre aux plafonds (indépendante des lampes et du mode) ----
-  // Chaque matériau de plafond a été copié à l'import : le retoucher ici
-  // n'éclaire que le plafond, jamais un mur qui partagerait le même matériau.
-  [[matsCiels, LUMIERE_CIELS], [matsPlafondsPleins, LUMIERE_PLAFONDS]].forEach(([liste, force]) => {
-    liste.forEach((m) => {
-      // état d'origine mémorisé une seule fois : une force de 0 le restitue
-      if (!m.userData.plaf0) m.userData.plaf0 = {
-        e: m.emissive ? m.emissive.clone() : null,
-        map: m.emissiveMap || null,
-        i: (m.emissiveIntensity === undefined ? 1 : m.emissiveIntensity),
-      };
-      const d = m.userData.plaf0;
-      if (!(force > 0)) {                    // retour exact à l'export Blender
-        if (d.e && m.emissive) m.emissive.copy(d.e);
-        m.emissiveMap = d.map;
-        m.emissiveIntensity = d.i;
-      } else if (d.map || m.map) {           // il y a une texture : elle émet
-        m.emissiveMap = d.map || m.map;
-        if (m.emissive) m.emissive.setRGB(force, force, force);
-        m.emissiveIntensity = 1;
-      } else if (m.emissive) {               // ni texture d'émission, ni texture
-        // La couleur de base de ces plafonds est NOIRE dans le .blend : la
-        // reprendre les laisserait noirs. On retombe donc sur une teinte neutre.
-        const c = m.color;
-        if (!c || (c.r + c.g + c.b) < 0.02) m.emissive.set(TEINTE_PLAFOND_NU).multiplyScalar(force);
-        else m.emissive.copy(c).multiplyScalar(force);
-        m.emissiveIntensity = 1;
-      }
-      m.needsUpdate = true;
-    });
-  });
-  hemi.intensity = plat ? 1.25 : (emissif ? 0.8 : AMBIANTE_LUMIERE);
-  // En mode 'blender' on garde les teintes CHAUDES de LUMIERE_AMBIANTE_* :
-  // l'ancien 0xbfc4cc était un gris bleuté qui refroidissait et aplatissait tout.
-  hemi.color.set((emissif || plat) ? 0xd9e3ea : LUMIERE_AMBIANTE_HAUT);
-  hemi.groundColor.set((emissif || plat) ? 0x3b4145 : LUMIERE_AMBIANTE_BAS);
-  renderer.toneMappingExposure = plat ? 0.9 : (emissif ? 0.82 : EXPO_LUMIERE);
-  appliquerEau();   // la teinte de l'eau se pose par-dessus, quel que soit le mode
-}
-
-/* ---------- grain PS1 : tremblement des sommets + textures affines ---------- */
-function appliquerGrainPS1(mat) {
-  const mats = Array.isArray(mat) ? mat : [mat];
-  mats.forEach((m) => {
-    if (!m || m.userData.__ps1) return;
-    if (m.isSpriteMaterial || m.isShaderMaterial || m.isRawShaderMaterial) return;
-    m.userData.__ps1 = true;
-    m.onBeforeCompile = (sh) => {
-      sh.uniforms.uPS1Grille = { value: PS1_JITTER ? PS1_GRILLE : 0.0 };
-      sh.uniforms.uPS1Affine = { value: PS1_AFFINE ? 1.0 : 0.0 };
-      m.userData.__sh = sh;
-      sh.vertexShader = sh.vertexShader
-        .replace('#include <common>',
-          '#include <common>\nuniform float uPS1Grille;\nuniform float uPS1Affine;\nvarying float vPS1W;')
-        .replace('#include <project_vertex>',
-          '#include <project_vertex>\n' +
-          'if ( uPS1Grille > 0.5 ) {\n' +
-          '  vec3 ndc = gl_Position.xyz / gl_Position.w;\n' +
-          '  ndc.xy = floor( ndc.xy * uPS1Grille + 0.5 ) / uPS1Grille;\n' +
-          '  gl_Position.xyz = ndc * gl_Position.w;\n' +
-          '}\n' +
-          'vPS1W = gl_Position.w;\n' +
-          '#ifdef USE_UV\n' +
-          'if ( uPS1Affine > 0.5 ) { vUv *= gl_Position.w; }\n' +
-          '#endif');
-      sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>',
-          '#include <common>\nuniform float uPS1Affine;\nvarying float vPS1W;')
-        .replace('#include <map_fragment>',
-          '#if defined( USE_MAP )\n' +
-          '  vec2 ps1Uv = ( uPS1Affine > 0.5 ) ? ( vUv / vPS1W ) : vUv;\n' +
-          '  vec4 texelColor = texture2D( map, ps1Uv );\n' +
-          '  texelColor = mapTexelToLinear( texelColor );\n' +
-          '  diffuseColor *= texelColor;\n' +
-          '#endif');
-    };
-    m.needsUpdate = true;
-  });
-}
-function majGrainPS1() {
-  scene.traverse((o) => {
-    if (!o.isMesh) return;
-    const mats = Array.isArray(o.material) ? o.material : [o.material];
-    mats.forEach((m) => {
-      const sh = m && m.userData && m.userData.__sh;
-      if (!sh) return;
-      sh.uniforms.uPS1Grille.value = PS1_JITTER ? PS1_GRILLE : 0.0;
-      sh.uniforms.uPS1Affine.value = PS1_AFFINE ? 1.0 : 0.0;
-    });
-  });
-}
-
-/* ---------- fumée PS1 : billboards immobiles, blanc laiteux ---------- */
-function textureNuage() {
-  const T = 64;                                   // basse définition : grain d'époque
-  const cv = document.createElement('canvas');
+function textureNuage() {   // 64 px, dégradé radial tramé : la fumée PS1 n'était jamais lisse
+  const T = 64, cv = document.createElement('canvas');
   cv.width = cv.height = T;
   const g = cv.getContext('2d');
-  const grad = g.createRadialGradient(T/2, T/2, 0, T/2, T/2, T/2);
-  grad.addColorStop(0.00, 'rgba(255,255,255,1)');
+  const grad = g.createRadialGradient(T / 2, T / 2, 0, T / 2, T / 2, T / 2);
+  grad.addColorStop(0, 'rgba(255,255,255,1)');
   grad.addColorStop(0.45, 'rgba(255,255,255,0.55)');
-  grad.addColorStop(1.00, 'rgba(255,255,255,0)');
-  g.fillStyle = grad; g.fillRect(0, 0, T, T);
-  // tramage : la fumée PS1 n'était jamais lisse
+  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  g.fillStyle = grad;
+  g.fillRect(0, 0, T, T);
   const img = g.getImageData(0, 0, T, T), d = img.data;
   let s = 1337;
   const rnd = () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
-  for (let i = 0; i < d.length; i += 4) d[i+3] = Math.max(0, Math.min(255, d[i+3] * (0.75 + 0.5 * rnd())));
+  for (let i = 3; i < d.length; i += 4) d[i] = Math.min(255, d[i] * (0.75 + 0.5 * rnd()));
   g.putImageData(img, 0, 0);
   const tex = new THREE.CanvasTexture(cv);
-  tex.magFilter = THREE.LinearFilter;
-  tex.minFilter = THREE.LinearFilter;
+  tex.magFilter = tex.minFilter = THREE.LinearFilter;
   return tex;
 }
 
 function construireFumee() {
-  while (groupeFumee.children.length) groupeFumee.remove(groupeFumee.children[0]);
   const tex = textureNuage();
   let s = FUMEE_GRAINE >>> 0;
   const rnd = () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
   const entre = (a, b) => a + (b - a) * rnd();
-
-  const evite = [];
   let poses = 0;
-
   for (const z of FUMEE_ZONES) {
-    let vises = z.nb;
-    let essais = 0;
     // beaucoup de tirages tombent hors des murs : on insiste jusqu'au compte
-    while (vises > 0 && essais < z.nb * 60 && poses < FUMEE_MAX) {
-      essais++;
+    for (let vises = z.nb, essais = 0; vises > 0 && essais < z.nb * 60 && poses < FUMEE_MAX; essais++) {
       const px = entre(z.x[0], z.x[1]), pz = entre(z.z[0], z.z[1]);
-      const esp = espaceGLB(px, pz, 1.9);        // il faut une PIÈCE, pas un toit
+      const esp = espaceGLB(px, pz);   // il faut une PIÈCE, pas un toit
       if (!esp) continue;
-      const hautMax = esp.plafond === null
-        ? z.haut[1]
-        : Math.min(z.haut[1], Math.max(0.2, esp.plafond - esp.sol - 0.35));
-      const py = esp.sol + entre(Math.min(z.haut[0], hautMax), hautMax);
-      if (evite.some((p) => Math.abs(p.y - py) < 2.2 &&
-            Math.hypot(p.x - px, p.z - pz) < FUMEE_DEGAGEMENT)) continue;
-      const mat = new THREE.SpriteMaterial({
-        map: tex, color: FUMEE_COULEUR, transparent: true, depthWrite: false,
-        opacity: entre(z.opacite[0], z.opacite[1]), fog: true,
-        blending: THREE.NormalBlending,
-      });
-      const sp = new THREE.Sprite(mat);
+      const hautMax = esp.plafond === null ? z.haut[1] : Math.min(z.haut[1], Math.max(0.2, esp.plafond - esp.sol - 0.35));
+      const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+        map: tex, color: FUMEE_COULEUR, transparent: true, depthWrite: false, fog: true,
+        opacity: entre(z.opacite[0], z.opacite[1]),
+      }));
       const d = entre(z.taille[0], z.taille[1]);
-      sp.scale.set(d, d * entre(0.55, 0.8), 1);  // nuages aplatis
-      sp.position.set(px, py, pz);
+      sp.scale.set(d, d * entre(0.55, 0.8), 1);   // nuages aplatis
+      sp.position.set(px, esp.sol + entre(Math.min(z.haut[0], hautMax), hautMax), pz);
       sp.renderOrder = 2;
       groupeFumee.add(sp);
       vises--; poses++;
@@ -1011,220 +729,74 @@ function construireFumee() {
   return poses;
 }
 
-function reglerFumee(actif) {
-  groupeFumee.visible = !!actif;
-}
+/* --- chargement --- */
+const chargeur = new THREE.GLTFLoader();
+const draco = new THREE.DRACOLoader();   // la géométrie du .glb est compressée en Draco (~10× plus léger)
+draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
+chargeur.setDRACOLoader(draco);
+majEtat('Chargement du monde…');
+chargeur.load(FICHIER_GLB,
+  (g) => {
+    try { monterMonde(g); majEtat(''); }
+    catch (e) { console.error(e); majEtat('Ce monde est illisible : ' + e.message, true); }
+  },
+  (evt) => { if (evt.total) majEtat('Chargement du monde… ' + Math.round(evt.loaded / evt.total * 100) + ' %'); },
+  () => majEtat('Le monde n’a pas pu être chargé.', true));
 
-function monterMondeGLB(gltf) {
-  const racine = gltf.scene;
-  mondeGLB = { racine, collision: [] };
-  racine.traverse((o) => {
-    if (o.isMesh) {
-      // Maillages riggés (personnages) : three.js décide de les afficher ou non
-      // d'après une sphère englobante calculée sur la pose AU REPOS. Dès que le
-      // personnage est posé ou animé autrement, la sphère ne correspond plus et
-      // il disparaît — entièrement ou par morceaux — selon l'angle de caméra.
-      if (o.isSkinnedMesh) o.frustumCulled = false;
-      // Un plafond reçoit une COPIE de son matériau : sa lumière lui est propre.
-      // Sans cette copie, éclairer « cielPlafond1 » éclairerait tout ce qui le
-      // partage, et les cinq plafonds sans matériau (qui reçoivent tous le MÊME
-      // matériau par défaut de GLTFLoader) entraîneraient avec eux le reste.
-      const objetPlafond = estPlafond(o);
-      if (objetPlafond && o.material) {
-        o.material = Array.isArray(o.material) ? o.material.map((m) => (m ? m.clone() : m))
-                                               : o.material.clone();
-      }
-      // L'eau : on lui prépare un matériau NON ÉCLAIRÉ (voir le bloc en tête).
-      // L'original est gardé de côté, jamais modifié.
-      const objetEau = !objetPlafond && o.material &&
-        estEau(o, Array.isArray(o.material) ? o.material[0] : o.material);
-      if (objetEau) {
-        const src = Array.isArray(o.material) ? o.material[0] : o.material;
-        const teinte = new THREE.MeshBasicMaterial({
-          transparent: true, opacity: src.opacity, depthWrite: false,
-          side: THREE.DoubleSide, toneMapped: false,
-        });
-        appliquerGrainPS1(teinte);     // même tremblement que le reste du monde
-        eaux.push({ mesh: o, origine: o.material, teinte });
-      }
-      // on garde les matériaux et textures EXACTEMENT comme exportés par
-      // Blender (rendu par pixel, couleurs sRGB) — fidèle au viewport
-      if (o.material) {
-        o.material.side = THREE.DoubleSide; // murs en plans simples visibles des deux côtés
-        o.material.needsUpdate = true;
-      }
-      // grain PS1 optionnel, greffé dans le shader de chaque matériau
-      if (o.material) appliquerGrainPS1(o.material);
-      // matériaux qui s'éclairent tout seuls (dalles, écrans, néons)
-      const mats = Array.isArray(o.material) ? o.material : [o.material];
-      mats.forEach((mm) => {
-        if (!mm) return;
-        if (objetPlafond) {   // rangé à part : sinon BOOST_CIELS et LUMIERE_*
-          // se disputeraient le même emissiveIntensity.
-          const liste = estCiel(o, mm) ? matsCiels : matsPlafondsPleins;
-          if (liste.indexOf(mm) < 0) liste.push(mm);
-          return;
-        }
-        if (objetEau) return;   // l'eau ne suit ni les lampes ni les ciels
-        const lum = mm.emissive && (mm.emissive.r + mm.emissive.g + mm.emissive.b) > 0.01;
-        if ((lum || mm.emissiveMap) && matsEmissifs.indexOf(mm) < 0) matsEmissifs.push(mm);
-      });
-      if (!/^eau/i.test(o.name || '')) mondeGLB.collision.push(o); // l'eau se traverse
-    } else if (o.isLight) {
-      lampesGLB.push(o);
-    }
-  });
-  scene.add(racine);
-  racine.updateMatrixWorld(true);
-
-  // --- ce qui appartient à la salle des poolrooms ---
-  // Un matériau partagé avec le reste du monde est EXCLU : sinon éclairer la
-  // salle éclairerait ailleurs. On se repère au centre de la sphère englobante
-  // et non à l'origine de l'objet — beaucoup des siens sont à (0, 0, 0).
-  const usagePool = new Map();
-  const _p = new THREE.Vector3();
-  racine.traverse((o) => {
-    if (o.isLight) { o.getWorldPosition(_p); if (dansPoolrooms(_p)) lampesPoolrooms.push(o); return; }
-    if (!o.isMesh || !o.geometry) return;
-    if (!o.geometry.boundingSphere) o.geometry.computeBoundingSphere();
-    if (!o.geometry.boundingSphere) return;
-    _p.copy(o.geometry.boundingSphere.center).applyMatrix4(o.matrixWorld);
-    const dedans = dansPoolrooms(_p);
-    (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => {
-      if (!m) return;
-      const u = usagePool.get(m) || { dedans: false, dehors: false };
-      if (dedans) u.dedans = true; else u.dehors = true;
-      usagePool.set(m, u);
-    });
-  });
-  usagePool.forEach((u, m) => { if (u.dedans && !u.dehors) matsPoolrooms.push(m); });
-
-  // --- lecteur d'animations ---
-  // Sans lui les squelettes restent sur les transformations par défaut du glTF.
-  if (ANIMATIONS_ACTIVES && gltf.animations && gltf.animations.length) {
-    mixerGLB = new THREE.AnimationMixer(racine);
-    gltf.animations.forEach((c) => mixerGLB.clipAction(c).play());
-    mondeGLB.animations = gltf.animations;
-  }
-
-  // --- le requin ne doit pas bloquer le visiteur ---
-  const requinNoeud = racine.getObjectByName('requin');
-  if (requinNoeud) {
-    const horsCollision = [];
-    requinNoeud.traverse((o) => { if (o.isMesh) horsCollision.push(o); });
-    mondeGLB.collision = mondeGLB.collision.filter((o) => horsCollision.indexOf(o) < 0);
-  }
-
-  // rendu fidèle à Blender : sRGB + AgX (greffé plus haut) + lumières physiques
-  renderer.outputEncoding = THREE.sRGBEncoding;
-  renderer.toneMapping = window.__agx ? THREE.LinearToneMapping : THREE.ACESFilmicToneMapping;
-  renderer.physicallyCorrectLights = true;
-  scene.traverse((o) => { if (o.isMesh && o.material) o.material.needsUpdate = true; });
-  appliquerModeLumiere();
-
-  placerAuDepartGLB();
-  if (FUMEE_ACTIVE) construireFumee();
-}
-if (typeof THREE.GLTFLoader === 'function') {
-  const chargeur = new THREE.GLTFLoader();
-  // géométrie compressée en Draco (le .glb est ~10x plus léger)
-  if (typeof THREE.DRACOLoader === 'function') {
-    const draco = new THREE.DRACOLoader();
-    draco.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/libs/draco/');
-    chargeur.setDRACOLoader(draco);
-  }
-  majEtat('Chargement du monde…');
-  chargeur.load(
-    FICHIER_GLB,
-    (g) => {
-      try { monterMondeGLB(g); majEtat(''); }
-      catch (e) { majEtat('Ce monde est illisible : ' + e.message, true); }
-    },
-    (evt) => {
-      if (!evt || !evt.total) return;
-      majEtat('Chargement du monde… ' + Math.round(evt.loaded / evt.total * 100) + ' %');
-    },
-    () => majEtat('Le monde n\u2019a pas pu être chargé.', true)
-  );
-} else {
-  majEtat('Bibliothèque 3D indisponible : vérifiez la connexion.', true);
-}
-
-// petit accès de débogage depuis la console du navigateur (sans effet en usage normal)
-window.__debug = { joueur, camera, scene, renderer,
+/* =====================================================================
+   DÉBOGAGE — depuis la console du navigateur (F12), sans effet en usage normal
+   ===================================================================== */
+window.__debug = {
+  joueur, camera, scene, renderer, bilan,
   get mondeGLB() { return mondeGLB; },
-  get fumee() { return groupeFumee; },
-  lumiere(mode) { MODE_LUMIERE = mode; appliquerModeLumiere(); return mode; },
-  // teinte de l'eau à chaud : __debug.eau('#2f86c5', 0.55)
-  // __debug.eau(null) restitue le matériau Blender d'origine
-  eau(couleur, opacite, luminosite) {
+  get mixer() { return mixer; },   // __debug.mixer.update(0.1) avance les animations à la main (onglet en arrière-plan)
+  expo(v)     { EXPO_LUMIERE = v; appliquerLumiere(); return v; },
+  ambiante(v) { AMBIANTE = v;     appliquerLumiere(); return v; },
+  lampes(echelle, plafond) {
+    if (echelle !== undefined) ECHELLE_LAMPES = echelle;
+    if (plafond !== undefined) PLAFOND_LAMPES = plafond;
+    appliquerLumiere(); return [ECHELLE_LAMPES, PLAFOND_LAMPES];
+  },
+  plafonds(ciels, pleins) {
+    if (ciels  !== undefined) LUMIERE_CIELS = ciels;
+    if (pleins !== undefined) LUMIERE_PLAFONDS = pleins;
+    appliquerLumiere(); return { ciels: LUMIERE_CIELS, pleins: LUMIERE_PLAFONDS };
+  },
+  listePlafonds() {   // vérifie le classement ciel / plein après un nouvel export
+    const r = { ciels: [], pleins: [] };
+    if (mondeGLB) mondeGLB.racine.traverse((o) => {
+      if (!o.isMesh || !estPlafond(o)) return;
+      const mats = materiaux(o);
+      r[mats[0] && estCiel(o, mats[0]) ? 'ciels' : 'pleins'].push(o.name + ' [' + mats.map((m) => m.name || '—').join(', ') + ']');
+    });
+    return r;
+  },
+  poolrooms(lampesX, emissif) {
+    if (lampesX !== undefined) LUMIERE_POOLROOMS = lampesX;
+    if (emissif !== undefined) EMISSIF_POOLROOMS = emissif;
+    appliquerLumiere(); return { lampes: LUMIERE_POOLROOMS, emissif: EMISSIF_POOLROOMS };
+  },
+  eau(couleur, opacite, luminosite) {   // __debug.eau('#2f86c5', 0.55) · __debug.eau(null) = origine Blender
     if (couleur === null) COULEUR_EAU = null;
     else if (couleur !== undefined) COULEUR_EAU = new THREE.Color(couleur).getHex();
     if (opacite !== undefined) OPACITE_EAU = opacite;
     if (luminosite !== undefined) LUMINOSITE_EAU = luminosite;
-    return appliquerEau();
+    appliquerEau(); return { couleur: COULEUR_EAU, opacite: OPACITE_EAU, luminosite: LUMINOSITE_EAU, nappes: eaux.length };
   },
-  // réglages de lumière à chaud, sans recharger la page
-  expo(v)     { EXPO_LUMIERE = v;     appliquerModeLumiere(); return v; },
-  ambiante(v) { AMBIANTE_LUMIERE = v; appliquerModeLumiere(); return v; },
-  ciels(v)    { BOOST_CIELS = v;      appliquerModeLumiere(); return v; },
-  // lumière des plafonds à chaud : __debug.plafonds(0.85, 0.22) — 0 = brut Blender
-  plafonds(ciels, pleins) {
-    if (ciels  !== undefined) LUMIERE_CIELS    = ciels;
-    if (pleins !== undefined) LUMIERE_PLAFONDS = pleins;
-    appliquerModeLumiere();
-    return { ciels: LUMIERE_CIELS, pleins: LUMIERE_PLAFONDS,
-             nb: { ciels: matsCiels.length, pleins: matsPlafondsPleins.length } };
-  },
-  // lumière de la salle des poolrooms : __debug.poolrooms(1.6, 1.2)
-  poolrooms(lampes, emissif) {
-    if (lampes  !== undefined) LUMIERE_POOLROOMS = lampes;
-    if (emissif !== undefined) EMISSIF_POOLROOMS = emissif;
-    appliquerModeLumiere();
-    return { lampes: LUMIERE_POOLROOMS, emissif: EMISSIF_POOLROOMS,
-             nb: { lampes: lampesPoolrooms.length, materiaux: matsPoolrooms.length } };
-  },
-  // vitesse des animations : __debug.anims(0) fige, __debug.anims(1) reprend
   anims(v) { if (v !== undefined) VITESSE_ANIMATIONS = v; return VITESSE_ANIMATIONS; },
-  // le lecteur lui-même. Utile quand l'onglet est en arrière-plan : le
-  // navigateur y gèle requestAnimationFrame, donc rien n'avance tout seul.
-  // __debug.mixer.update(0.1) fait avancer d'un dixième de seconde.
-  get mixer() { return mixerGLB; },
-  // liste ce qui a été reconnu comme plafond, pour vérifier le classement
-  listePlafonds() {
-    const r = { ciels: [], pleins: [] };
-    if (mondeGLB) mondeGLB.racine.traverse((o) => {
-      if (!o.isMesh || !estPlafond(o)) return;
-      const mats = Array.isArray(o.material) ? o.material : [o.material];
-      const fam = estCiel(o, mats[0]) ? 'ciels' : 'pleins';
-      r[fam].push(o.name + ' [' + mats.map((m) => {
-        const t = m && (m.map || m.emissiveMap);
-        return ((m && m.name) || '—') + (t && t.name ? ' · ' + t.name : '');
-      }).join(', ') + ']');
-    });
-    return r;
-  },
-  lampes(echelle, plafond) {
-    if (echelle !== undefined) ECHELLE_LAMPES_GLB = echelle;
-    if (plafond !== undefined) PLAFOND_LAMPES_GLB = plafond;
-    appliquerModeLumiere(); return [ECHELLE_LAMPES_GLB, PLAFOND_LAMPES_GLB];
-  },
-  grain(jitter, affine) { PS1_JITTER = !!jitter; PS1_AFFINE = !!affine; majGrainPS1(); return [PS1_JITTER, PS1_AFFINE]; },
-  // brouillard à chaud : __debug.brouillard(4, 25) ou __debug.brouillard(12, 70, 0x191014)
-  brouillard(pres, loin, couleur) {
+  fumeeVisible(v) { groupeFumee.visible = !!v; return groupeFumee.visible; },
+  brouillard(pres, loin, couleur) {   // __debug.brouillard(4, 25) · __debug.brouillard(12, 70, 0x191014)
     if (pres !== undefined) scene.fog.near = pres;
-    if (loin !== undefined) scene.fog.far  = loin;
+    if (loin !== undefined) scene.fog.far = loin;
     if (couleur !== undefined) { scene.fog.color.set(couleur); renderer.setClearColor(couleur); }
     return [scene.fog.near, scene.fog.far, '#' + scene.fog.color.getHexString()];
   },
+  resolution: reglerResolution,
   pause(v) { basculerPause(v); return enPause; },
-  get enPause() { return enPause; },
-  fumeeVisible(v) { reglerFumee(v); return v; },
-  resolution(r) { renderer.setPixelRatio(r); renderer.domElement.style.imageRendering = r < 0.99 ? 'pixelated' : 'auto'; return r; },
-  teleporter(x, z, yaw) {
+  teleporter(x, z, yaw) {   // pose le visiteur au sol de la pièce en (x, z)
     joueur.x = x; joueur.z = z;
     if (yaw !== undefined) joueur.yaw = yaw;
-    const esp = mondeGLB ? espaceGLB(x, z, 1.9) : null;
+    const esp = mondeGLB ? espaceGLB(x, z) : null;
     if (esp) joueur.y = esp.sol;
     camY = joueur.y + HAUTEUR_YEUX;
     camera.position.set(joueur.x, camY, joueur.z);
@@ -1233,92 +805,64 @@ window.__debug = { joueur, camera, scene, renderer,
   },
 };
 
-/* =====================================================================
-   PANNEAU DE RÉGLAGES — comparer les options en direct (touche P)
-   ===================================================================== */
-(function panneauReglages() {
-  const pan = document.getElementById('reglages');
-  const ouvre = document.getElementById('reglages-ouvre');
-  if (!pan) return;
-  // réservé à l'autrice : le panneau n'existe qu'avec  index.html?reglages
-  // dans l'adresse. Les visiteurs ne le voient jamais et ne peuvent pas
-  // modifier les réglages — c'est toi qui les fixes dans le code.
-  if (!new URLSearchParams(location.search).has('reglages')) {
-    pan.remove(); ouvre.remove(); return;
-  }
-  const etat = { res: RESOLUTION_PS1, lum: MODE_LUMIERE, jit: PS1_JITTER,
-                 aff: PS1_AFFINE, fum: 1 };
-
-  function bouton(hote, texte, actif, action) {
-    const b = document.createElement('button');
-    b.textContent = texte;
-    if (actif) b.className = 'on';
-    b.addEventListener('click', (e) => { e.stopPropagation(); action(); dessiner(); });
-    hote.appendChild(b);
-  }
-
-  function densiteFumee(f) {
+/* --- panneau de réglages (touche P) : réservé à l'autrice, n'existe qu'avec index.html?reglages --- */
+(function panneau() {
+  const pan = el('reglages'), ouvre = el('reglages-ouvre');
+  if (IS_MOBILE || !new URLSearchParams(location.search).has('reglages')) { pan.remove(); ouvre.remove(); return; }
+  ouvre.style.display = 'block';
+  const etat = { res: RESOLUTION, fum: 1 };
+  function densiteFumee(f) {   // 0,5 : un nuage sur deux · 2 : tous, deux fois plus opaques
     etat.fum = f;
     groupeFumee.visible = f > 0;
     groupeFumee.children.forEach((sp, i) => {
       if (sp.userData.o0 === undefined) sp.userData.o0 = sp.material.opacity;
-      // f=0.5 : un nuage sur deux · f=2 : tous, deux fois plus opaques
-      sp.visible = (f >= 1) || (i % 2 === 0);
+      sp.visible = f >= 1 || i % 2 === 0;
       sp.material.opacity = Math.min(0.55, sp.userData.o0 * Math.max(1, f));
     });
   }
-
   function dessiner() {
-    const gRes = document.getElementById('g-res'); gRes.innerHTML = '';
-    [['0.4', 0.4], ['0.6', 0.6], ['0.8', 0.8], ['net', 1]].forEach(([t, v]) =>
-      bouton(gRes, t, Math.abs(etat.res - v) < 0.01, () => {
-        etat.res = v;
-        renderer.setPixelRatio(v);
-        renderer.domElement.style.imageRendering = v < 0.99 ? 'pixelated' : 'auto';
-      }));
-
-    const gLum = document.getElementById('g-lum'); gLum.innerHTML = '';
-    [['émissif', 'emissif'], ['lampes .blend', 'blender'], ['plat', 'plat']].forEach(([t, v]) =>
-      bouton(gLum, t, etat.lum === v, () => { etat.lum = v; MODE_LUMIERE = v; appliquerModeLumiere(); }));
-
-    const gGr = document.getElementById('g-grain'); gGr.innerHTML = '';
-    bouton(gGr, 'tremblement', etat.jit, () => { etat.jit = !etat.jit; PS1_JITTER = etat.jit; majGrainPS1(); });
-    bouton(gGr, 'textures affines', etat.aff, () => { etat.aff = !etat.aff; PS1_AFFINE = etat.aff; majGrainPS1(); });
-
-    const gFu = document.getElementById('g-fum'); gFu.innerHTML = '';
-    [['aucune', 0], ['discrète', 0.5], ['normale', 1], ['épaisse', 2]].forEach(([t, v]) =>
-      bouton(gFu, t, etat.fum === v, () => densiteFumee(v)));
+    const groupe = (id, choix, actif, action) => {
+      const g = el(id);
+      g.innerHTML = '';
+      choix.forEach(([texte, v]) => {
+        const b = document.createElement('button');
+        b.textContent = texte;
+        if (actif(v)) b.className = 'on';
+        b.addEventListener('click', (e) => { e.stopPropagation(); action(v); dessiner(); });
+        g.appendChild(b);
+      });
+    };
+    groupe('g-res', [['0.4', 0.4], ['0.6', 0.6], ['0.8', 0.8], ['net', 1]],
+      (v) => Math.abs(etat.res - v) < 0.01, (v) => { etat.res = v; reglerResolution(v); });
+    groupe('g-fum', [['aucune', 0], ['discrète', 0.5], ['normale', 1], ['épaisse', 2]],
+      (v) => etat.fum === v, densiteFumee);
   }
-
   function basculer(v) {
-    const ouvert = (v === undefined) ? (pan.style.display !== 'block') : v;
+    const ouvert = v === undefined ? pan.style.display !== 'block' : v;
     pan.style.display = ouvert ? 'block' : 'none';
     ouvre.style.display = ouvert ? 'none' : 'block';
-    if (ouvert) { dessiner(); if (document.exitPointerLock) document.exitPointerLock(); }
+    if (ouvert) { dessiner(); if (document.pointerLockElement) document.exitPointerLock(); }
   }
   ouvre.addEventListener('click', (e) => { e.stopPropagation(); basculer(true); });
-  addEventListener('keydown', (e) => { if (e.code === 'KeyP') basculer(); });
   pan.addEventListener('click', (e) => e.stopPropagation());
-  if (IS_MOBILE) ouvre.style.display = 'none';
-  window.__reglages = { basculer, densiteFumee, etat };
+  addEventListener('keydown', (e) => { if (e.code === 'KeyP') basculer(); });
 })();
 
+/* =====================================================================
+   BOUCLE PRINCIPALE
+   ===================================================================== */
 const horloge = new THREE.Clock();
-// pose la caméra avant le premier rendu (visible derrière l'écran d'accueil)
-camera.position.set(joueur.x, camY, joueur.z);
+camera.position.set(joueur.x, camY, joueur.z);   // caméra posée avant le premier rendu
 camera.rotation.set(joueur.pitch, joueur.yaw, 0);
-
-function boucle() {
+(function boucle() {
   requestAnimationFrame(boucle);
   const dt = Math.min(0.05, horloge.getDelta());
-
-  if (!enPause) majJoueur(dt);
-  if (mixerGLB && !enPause) mixerGLB.update(dt * VITESSE_ANIMATIONS);
-  majOverlays();
-
+  if (!enPause) {
+    majJoueur(dt);
+    if (mixer) mixer.update(dt * VITESSE_ANIMATIONS);
+  }
   renderer.render(scene, camera);
-}
-boucle();
+})();
 </script>
 </body>
 </html>
