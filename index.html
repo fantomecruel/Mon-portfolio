@@ -12,119 +12,89 @@
 
 <body>
   <div id="app">
+    <!-- Menu mobile : ancres vers les trois parties (masqué sur desktop) -->
+    <nav class="menu-mobile">
+      <a href="#photographies">Photographies</a>
+      <a href="#backrooms">Backrooms Core Portfolio 3D</a>
+      <a href="#cv">CV</a>
+    </nav>
+
     <div class="container">
       <!--
        
-              _    .  ,   .           .
-    *  / \_ *  / \_      _  *        *   /\'__        *
-      /    \  /    \,   ((        .    _/  /  \  *'.
- .   /\/\  /\/ :' __ \_  `          _^/  ^/    `--.
-    /    \/  \  _/  \-'\      *    /.' ^_   \_   .'\  *
-  /\  .-   `. \/     \ /==~=-=~=-=-;.  _/ \ -. `_/   \
- /  `-.__ ^   / .-'.--\ =-=~_=-=~=^/  _ `--./ .-'  `-
-     `. .  / /       `.~-^=-=~=^=.-'      '-._ `._
-
-
+        .--'''''''''--.
+     .'      .---.      '.
+    /    .-----------.    \
+   /        .-----.        \
+   |       .-.   .-.       |
+   |      /   \ /   \      |
+    \    | .-. | .-. |    /
+     '-._| | | | | | |_.-'
+         | '-' | '-' |
+          \___/ \___/
+       _.-'  /   \  `-._
+     .' _.--|     |--._ '.
+     ' _...-|     |-..._ '
+            |     |
+            '.___.'
+              | |
+             _| |_
+            /\( )/\
+SOS
 -->
-      <!-- Block 1: Photographie -->
-      <div class="block" @click="handleClick(0, $event)">
-        <img class="titrephoto titrephoto-desktop" src="photos/photographiebelvina.svg" alt="titrephoto desktop" />
-        <img class="titrephoto titrephoto-mobile" src="photos/photographiemobilebelvina.svg" alt="titrephoto mobile" />
-      </div>
 
-      <!-- Block 2: Portfolio (bas droit) -->
-      <div class="block" @click="handleClick(1, $event)">
-        <h1>Aurélia Foucher</h1>
-        <img class="photonom" src="photos/titreaurelia.svg" alt="Nom" />
-        <img class="dog-icon-desktop" src="photos/pictodogshadow.svg" alt="Icône Dog" />
-      </div>
-
-      <!-- Block 3: Portfolio 3D (toute la bande haut droite) -->
-      <!-- Réplique en HTML de l'écran d'accueil de 3d/index.html : la vraie page
-           charge monde.glb (16 Mo) dès son ouverture, on ne peut donc pas la
-           mettre en iframe ici. Au clic, l'overlay charge la vraie page. -->
-      <div class="block bloc3d" @click="handleClick(2, $event)">
-        <h2>portfolio 3D</h2>
-        <div class="accueil3d">
-          <div class="accueil3d-titre">Backrooms core. Portfolio version 3D</div>
-          <div class="accueil3d-enter accueil3d-desktop">Cliquez pour entrer</div>
-          <div class="accueil3d-enter accueil3d-mobile">Touchez pour entrer</div>
-          <div class="accueil3d-note">version mobile pas à jour pour le moment</div>
-          <!-- Les commandes ne sont plus rappelées ici : elles apparaissent sur
-               le vrai écran d'accueil, une fois l'overlay ouvert. -->
+      <!-- Colonne 1 : Photographies (cliquable → overlay PDF) -->
+      <div class="colonne colonne-photo" id="photographies">
+        <div class="block bloc-photo" @click="handleClick(0, $event)">
+          <h2 class="sr-only">Photographies</h2>
+          <img class="titrephoto" src="photos/photographiebelvina.svg" alt="Photographie" />
         </div>
       </div>
 
-      <!-- Block 4: Dog icon mobile (masqué desktop) -->
-      <div class="block" @click="handleClick(3, $event)"></div>
-
-      <!-- Block 5: Empty / extra content (masqué desktop) -->
-      <div class="block" @click="handleClick(4, $event)"></div>
-
-      <!-- Block 6: absorbé par le bloc 3D, qui occupe les colonnes 2 et 3.
-           Le div reste en place (vide, masqué en CSS) -->
-      <div class="block"></div>
-    </div>
-
-    <!-- OVERLAY with conditional class for block 2 card mode -->
-    <div v-if="activeBlock" class="overlay" :class="{'overlay-block2': activeBlock && activeBlock.index === 1}" :style="overlayStyle" @click.self="closeOverlay">
-     <!-- Block 0: Photographie (PDF) -->
-<div v-if="activeBlock.index === 0 && showPhotoPdf" class="pdf-container" @click.stop>
-  <button class="btn-close" @click.stop="closeOverlay" aria-label="Fermer">X</button>
-
-  <a
-    href="photos/photographies.pdf"
-    target="_blank"
-    style="position:absolute; right:12px; top:40px; z-index:11; font: 14px/1.2 sans-serif; background:#000; color:#fff; padding:6px 10px; border-radius:6px; text-decoration:none;">
-    Ouvrir dans un onglet
-  </a>
-
-  <iframe
-    src="photos/photographies.pdf#zoom=page-fitH"
-    style="width:100%;height:100%;"
-    frameborder="0"
-    title="Portfolio Photographie">
-  </iframe>
-</div>
-
-      <!-- Block 1: Portfolio (texte) -->
-      <div v-if="activeBlock.index === 1 && showBlock2Grid" class="block2-content">
-        <div class="block2-inner" @click.stop>
+      <!-- Colonne 2 : Aurélia Foucher -->
+      <div class="colonne colonne-bio" id="cv">
+        <div class="bio">
+          <h1 class="sr-only">Aurélia Foucher</h1>
+          <img class="photonom" src="photos/titreaurelia.svg" alt="Aurélia Foucher" />
+          <img class="dog-icon" src="photos/pictodogshadow.svg" alt="Icône Dog" />
           <div class="grid-2">
             <div class="cell"><a href="photos/cvaureliafoucher.pdf" target="_blank" class="cv-link"> → CV ← </a>Ce portfolio que j’ai développé est un aperçu de mon univers artistique et professionnel. 
-            Diplômée des Beaux-Arts de Montpellier, j’ai passé la majeure partie de ma carrière professionnelle en tant qu’artiste plasticienne et photographe. J’ai souvent travaillé en restauration, un choix qui m’a permis de financer mes projets artistiques. <br><br>Tout au long de mon parcours, j’ai été fascinée par le monde du virtuel, de l’immersif, et en particulier par la réalité virtuelle. Les possibilités infinies qu’offre le monde numérique m’ont attirée et j’ai décidé de faire une formation en développement web de 7 mois en 2023, voyant ce domaine comme une extension naturelle de ma passion pour l’art visuel. <br> Pour moi, l’apprentissage des langages informatiques était un pas indispensable pour intégrer le numérique à mes projets artistiques.</div>
-            <div class="cell">La première partie de ce portfolio est une petite sélection (issue de différentes séries)  de  mon  travail  réalisé à la chambre photographique 5x7’’ ou au polaroïd. <br>J’expérimente la photographie argentique depuis 2015. J'aborde chaque image comme un espace à construire, proche du plan cinématographique, où l'intime devient un terrain d'observation plutôt qu'un récit personnel
-            Je travaille en ce moment à l’écriture d’un court-métrage que j’aimerais réaliser, qui tourne autour de la démultiplication de soi, des figures qui se répètent, se dédoublent, s'imitent,se font face. <br><br> J’ai toujours évolué autour du milieu du cinéma pendant mes études  notamment grâce à mes recontres avec des étudiant.e.s de l’ENSAV de Toulouse.  J’ai participé à de nombreux courts-métrages et clips en tant que technicienne et j’ai beaucoup hésité à poursuivre des études dans ce domaine.</div>
-            <div class="cell">J'ai travaillé sur 2 long-métrages  «La mer au loin» de Saïd Hamich fin 2023 et "Une famille de Bâtards" de Mourad Winter en 2025. <br>Ces premières expériences en tant qu’assistante graphiste et 3e assistante déco m’ont vraiment donné envie de continuer,  et c’est pour ça que j’ai suivi une formation infographiste quelques mois après, afin de me perfectionner dans la suite Adobe et viser le métier de graphiste de décoration de cinéma, en parallèle de mon activité artistique personnelle. <br><br> Enfin, dans la partie Backrooms Core, j'ai réalisé un environnement inspiré de l'univers des backrooms, dans lequel se trouve des fragments et références aux lieux qui peuplent mon inconscient, mes souvenirs. Cette partie est encore en construction, j'aimerais qu'elle soit interactive. 
-            </div>  
+            Diplômée des Beaux-Arts de Montpellier, j’ai passé la majeure partie de ma carrière professionnelle en tant qu’artiste plasticienne et photographe. <br><br>Tout au long de mon parcours, j’ai été fascinée par le monde du virtuel, de l’immersif, et en particulier par la réalité virtuelle et j’ai décidé de faire une formation en développement web de 7 mois en 2023, voyant ce domaine comme une extension naturelle de ma passion pour l’art visuel. <br> Pour moi, l’apprentissage des langages informatiques était un pas indispensable pour intégrer le numérique à mes projets artistiques.</div>
+            <div class="cell">La partie Photographies de ce portfolio est une petite sélection (issue de différentes séries)  de  mon  travail  réalisé à la chambre photographique 5x7’’ ou au polaroïd. <br>J’expérimente la photographie argentique depuis 2015. J'aborde chaque image comme un espace à construire, proche du plan cinématographique, où l'intime devient un terrain d'observation plutôt qu'un récit personnel
+            Je travaille en ce moment à l’écriture d’un court-métrage que j’aimerais réaliser, qui tourne autour de la démultiplication de soi, des figures qui se répètent, se dédoublent, s'imitent, se font face. <br><br> J’ai toujours évolué autour du milieu du cinéma pendant mes études  notamment grâce à mes recontres avec des étudiant.e.s de l’ENSAV de Toulouse. J’ai participé à de nombreux courts-métrages et clips en tant que technicienne et j’ai beaucoup hésité à poursuivre des études dans ce domaine.</div>
+            <div class="cell">J'ai travaillé sur 2 long-métrages  «La mer au loin» de Saïd Hamich fin 2023 et "Une famille de Bâtards" de Mourad Winter en 2025. <br>Ces premières expériences en tant qu’assistante graphiste et 3e assistante déco m’ont vraiment donné envie de continuer,  et c’est pour ça que j’ai suivi une formation infographiste quelques mois après, afin de me perfectionner dans la suite Adobe et viser le métier de graphiste de décoration de cinéma, en parallèle de mon activité artistique personnelle. <br><br> Dans la partie Backrooms Core, j'ai réalisé un environnement inspiré de l'univers des backrooms, dans lequel se trouve des fragments et références aux lieux, objets et personnes qui peuplent mes obessions, mes passions et mes souvenirs. Cette partie est encore en construction, j'aimerais qu'elle soit interactive. 
+            </div>
           </div>
         </div>
       </div>
 
-    <!-- Portfolio 3D plein écran -->
-  <div v-if="activeBlock.index === 2 && show3d"
-     class="pdf-container conteneur3d"
-     @click.stop>
-  <button class="btn-close" @click.stop="closeOverlay" aria-label="Fermer">X</button>
-<a
-  href="3d/index.html"
-  target="_blank"
-  style="position:absolute; right:12px; top:40px; z-index:11; font: 14px/1.2 sans-serif; background:#000; color:#fff; padding:6px 10px; border-radius:6px; text-decoration:none;">
-  Ouvrir dans un onglet
-</a>
-  <iframe
-    src="3d/index.html"
-    class="iframe3d"
-    allow="fullscreen; pointer-lock"
-    allowfullscreen
-    frameborder="0"
-    title="Portfolio 3D">
-  </iframe>
-
-
+      <!-- Colonne 3 : Backrooms Core / Portfolio 3D (cliquable → overlay 3d/index.html) -->
+      <div class="colonne colonne-3d" id="backrooms">
+        <div class="block bloc3d" @click="handleClick(2, $event)">
+          <h2 class="sr-only">Backrooms Core — Portfolio 3D</h2>
+          <img class="titre3d" src="photos/backroomscore.svg" alt="Backrooms Core, portfolio 3D" />
+        </div>
+      </div>
     </div>
+
+    <footer class="credits">© 2026 @fantomecruel</footer>
+
+    <!-- OVERLAY -->
+    <div v-if="activeBlock" class="overlay" :style="overlayStyle" @click.self="closeOverlay">
+      <!-- Photographies (PDF) -->
+      <div v-if="activeBlock.index === 0 && showPhotoPdf" class="pdf-container" @click.stop>
+        <button class="btn-close" @click.stop="closeOverlay" aria-label="Fermer">X</button>
+        <a class="btn-onglet" href="photos/photographies.pdf" target="_blank">Ouvrir dans un onglet</a>
+        <iframe src="photos/photographies.pdf#zoom=page-fitH" style="width:100%;height:100%;" frameborder="0" title="Portfolio Photographie"></iframe>
+      </div>
+
+      <!-- Portfolio 3D plein écran -->
+      <div v-if="activeBlock.index === 2 && show3d" class="pdf-container conteneur3d" @click.stop>
+        <button class="btn-close" @click.stop="closeOverlay" aria-label="Fermer">X</button>
+        <a class="btn-onglet" href="3d/index.html" target="_blank">Ouvrir dans un onglet</a>
+        <iframe src="3d/index.html" class="iframe3d" allow="fullscreen; pointer-lock" allowfullscreen frameborder="0" title="Portfolio 3D"></iframe>
+      </div>
     </div>
   </div>
-
- </body>
+</body>
 </html>

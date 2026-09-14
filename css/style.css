@@ -1,186 +1,85 @@
+/* =====================================
+   Thème & normalisation
+====================================== */
+:root { --cream:#fffefc; --black:#000; --link:#ff422b; --nav-h:44px; }
+* { box-sizing: border-box }
+html { scroll-behavior: smooth }
+html, body { margin:0; padding:0; background:var(--cream); min-height:100vh; cursor:url('../photos/cursor.png') 8 8, auto; }
 
-     /* =====================================
-       Thème & normalisation
-    ====================================== */
-    :root { --cream:#fffefc; --black:#000; --link:#597ef7; }
-    * { box-sizing: border-box }
-    html, body { margin:0; padding:0; background:var(--black); height:100%; min-height:100vh; cursor:url('../photos/cursor.png') 8 8, auto; }
+/* Fonts */
+@font-face{font-family:'Megants';src:url('../fonts/Megants.otf') format('opentype')}
+@font-face{font-family:'Minion';src:url('../fonts/MinionProSemiboldDisplay.otf') format('opentype')}
 
-    /* -------------------------------------
-       Fonts
-    -------------------------------------- */
-    @font-face{font-family:'Megants';src:url('../fonts/Megants.otf') format('opentype')}
-    @font-face{font-family:'Minion';src:url('../fonts/MinionProSemiboldDisplay.otf') format('opentype')}
-    /* Police de l'écran d'accueil 3D : la même que dans 3d/index.html, pour que
-       le bloc et la page plein écran soient identiques. */
-    @font-face{font-family:'Belvina';src:url('../3d/CSBelvina-Regular_demo-BF669f0fb63ba84.otf') format('opentype');font-weight:normal;font-style:normal;font-display:swap}
-    
-    /* ======== GRID LAYOUT ======== */
-    .container{
-      display:grid;
-      grid-template-columns:50% 25% 25%;
-      /* la moitié droite se partage 2/3 pour la 3D, 1/3 pour le nom.
-         La colonne photographie est en grid-row:1/3, elle n'est pas concernée. */
-      grid-template-rows:62% 38%;
-      width:100vw;height:100vh;position:relative
-    }
+/* =====================================
+   ACCUEIL desktop : 3 colonnes
+   photographies | Aurélia Foucher (texte) | backrooms core
+====================================== */
+.container{display:grid;grid-template-columns:28% 44% 28%;width:100vw;height:100vh;background:var(--cream)}
+.colonne{display:flex;justify-content:center;align-items:center;min-height:0;padding:3vh 2vw}
 
+/* Cartes cliquables : image de fond + SVG centré (l'overlay part du rectangle de la carte) */
+.block{position:relative;display:flex;justify-content:center;align-items:center;overflow:hidden;cursor:pointer;
+  width:min(100%,62vh*1074/1300);aspect-ratio:1074/1300;background:var(--cream) no-repeat center/cover;
+  box-shadow:0 8px 22px rgba(0,0,0,.18);padding-bottom:12% /* centre le titre sur la photo, pas sur le bord bas du polaroid */}
+.bloc-photo{background-image:url('../photos/statuenb.png')}
+.bloc3d{background-image:url('../photos/statuenb2.png')}
+.titrephoto,.titre3d{display:block;width:60%;height:auto;z-index:2;transition:opacity .8s ease-out}
+.titre3d{width:62%}
+.block:hover .titrephoto,.block:hover .titre3d{opacity:.5}
 
-    .block{width:100%;height:100%;display:flex;justify-content:center;align-items:center;position:relative;overflow:hidden;background:var(--cream)}
-    .block img {cursor: pointer; /* seulement sur les images cliquables */}
-    /* Block 1: Photographie (moitié gauche, 2 rangées) */
-    .block:nth-child(1){grid-column:1/2;grid-row:1/3;background:url('../photos/statuenb.png') no-repeat center/cover,var(--cream);flex-direction:column;text-align:center}
-    .titrephoto{ pointer-events: auto;width:30vw;height:auto;z-index:2;display:block;transition: opacity 0.8s ease-out;}
-    .titrephoto-desktop{display:block; padding-bottom:17%;}
-    .titrephoto:hover {opacity: 0.5;}
-    .titrephoto-mobile{display:none;width:44vw}
-    .block:nth-child(1) h2{font-family:'Megants',sans-serif;text-transform:uppercase;font-size:1.3rem}
+/* Titres invisibles (SEO) */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-    /* Bloc 3 : Portfolio 3D → toute la bande haut de la moitié droite
-       (anciennement Graphisme en 2/3 + Graphisme décor en 3/4) */
-    .block:nth-child(3) {
-    grid-column: 2 / 4;
-    grid-row: 1 / 2;
-    position: relative; /* nécessaire pour centrer le titre */
-    display: flex;
-    justify-content: center;
-    align-items: center;}
+/* Colonne centrale : nom + texte de présentation */
+.bio{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#000;
+  width:100%;max-height:100%;overflow-y:auto;padding:1vh 1vw}
+.photonom{width:34%;max-width:260px;display:block}
+.handle{font:.75rem 'Minion',serif;color:#2d2929;margin:.45rem 0 .6rem}
+.dog-icon{width:30px;margin:1.6rem 0 2.4rem;transition:transform 1s ease-in-out}
+.dog-icon:hover{transform:scale(1.1) rotate(180deg);transition-duration:.5s}
+.grid-2{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem 1.6rem;width:100%;align-items:start}
+.cell{font-family:'Minion',serif;font-size:clamp(.66rem,.8vw,.9rem);line-height:1.35;text-align:justify;hyphens:auto}
+.cv-link{display:block;text-align:center;margin-bottom:1rem;color:var(--link);text-decoration:none;text-transform:uppercase;transition:color .3s;font:1.3rem 'Megants',sans-serif}
+.cv-link:hover{color:darkblue;text-decoration:underline}
 
-    /* --- Réplique de l'écran d'accueil de 3d/index.html --- */
-    .bloc3d{background:#000!important;cursor:pointer}
-    .accueil3d{display:flex;flex-direction:column;align-items:center;justify-content:center;
-      text-align:center;color:#fff;font-family:'Belvina',"Courier New",monospace;padding:0 6%}
-    .accueil3d-titre{font-size:clamp(20px,2.4vw,38px);letter-spacing:2px;line-height:1.15;
-      max-width:13em;margin:0 0 18px}
-    .accueil3d-enter{font-size:clamp(15px,1.9vw,24px);animation:pulse3d 1.6s infinite}
-    .accueil3d-ctrl{color:rgba(255,255,255,.7);font-size:clamp(9px,1vw,13px);margin-top:18px;
-      background:rgba(255,255,255,.07);padding:8px 16px;border-radius:8px;max-width:30em}
-    .accueil3d-note{margin-top:14px;font-size:clamp(9px,1vw,13px);color:#e05555}
-    @keyframes pulse3d{0%,100%{opacity:1}50%{opacity:.45}}
-    .bloc3d:hover .accueil3d-titre{opacity:.7;transition:opacity .4s ease-out}
-    .accueil3d-mobile{display:none}
+/* Crédits : fixés en bas sur desktop (page sans défilement) */
+.credits{position:fixed;left:14px;bottom:10px;text-align:left;font:.6rem 'Minion',serif;color:#8a8a8a;letter-spacing:.06em;pointer-events:none}
 
-    /* Titre invisible pour SEO */
-    .block:nth-child(3) h2, .block:nth-child(6) h2  {
-    position: absolute !important;
-    width: 1px; height: 1px;
-    padding: 0; margin: 0;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-   white-space: nowrap;
-    border: 0;}
+/* Menu mobile : caché sur desktop */
+.menu-mobile{display:none}
 
-    /* SVG du titre */
-    .titregraphisme{max-height: 40%;max-width: 40%;display: block;}
-    .titregraphisme:hover{opacity: 0.5;}
-    .titregraphisme-mobile{display:none;width:44vw}
+/* =====================================
+   OVERLAY (photographies PDF / portfolio 3D)
+====================================== */
+.overlay{position:fixed;inset:0;z-index:1000;background:var(--cream);transition:all .5s ease-out;overflow:hidden}
+.pdf-container{position:relative;width:100%;height:100%;margin:auto;background:#fff}
+/* 3D : fond noir pour enchaîner sans flash blanc sur l'écran d'accueil de la page 3D */
+.conteneur3d{background:#000}
+.iframe3d{width:100%;height:100%;border:0;display:block}
+.btn-close{position:absolute;top:40px;left:10px;z-index:10;background:red;color:#fff;border:none;border-radius:5px;padding:5px 10px;cursor:pointer}
+.btn-onglet{position:absolute;right:12px;top:40px;z-index:11;font:14px/1.2 sans-serif;background:#000;color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none}
 
+/* =====================================
+   RESPONSIVE
+====================================== */
+@media (min-width:1025px){html,body{overflow:hidden}}
 
-    /* Block 6: absorbé par le bloc 3D — masqué, comme les blocs 4 et 5 */
-    .block:nth-child(6){display:none}
-    .graphismedecor { pointer-events: auto;width:10vw;height:auto;z-index:2;transition: all 0.5s ease-out;}
-    .graphismedecor:hover {filter: drop-shadow(2px 2px 0px #597ef7);}
-
-    /* Block 2: Aurélia Foucher (bas droit pleine largeur) */
-    .block:nth-child(2){grid-column:2/4;grid-row:2/3;display:flex;flex-direction:column;text-align:center;gap:5%;color:#000}
-    .block:nth-child(2) h1{font:1.3rem 'Megants',sans-serif;text-transform:uppercase;position:absolute!important;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    .photonom{width:25%;padding-bottom: 3%;}
-    .photonom:hover{opacity: 0.5;}
-
-    /* Hide 4 & 5 on desktop; they'll reappear on mobile */
-    .block:nth-child(4),.block:nth-child(5){display:none}
-
-    /* Dog icon desktop (conserve) */
-    .dog-icon-desktop{top:calc(60vh + 20vh);left:33.33vw;width:40px;transition:transform 1s ease-in-out;z-index:2}
-    .dog-icon-desktop:hover{transform:translateX(0%) scale(1.1) rotate(180deg);transition-duration:.5s}
-
-    /* ======== OVERLAY (général) ======== */
-    .overlay{position:fixed;inset:0;z-index:1000;background:var(--cream);transition:all .5s ease-out;overflow:hidden}
-    /* Spécifique bloc 2 : carte centrée cliquable autour */
-    .overlay.overlay-block2{display:flex;justify-content:center;align-items:center;padding:4vh 4vw}
-
-    /* Slider */
-    .image-slider{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;justify-content:center;align-items:center}
-    .image-slider img{max-height:80vh;max-width:90vw;height:auto;width:auto;object-fit:contain;display:block;cursor:pointer}
-
-    /* Bloc 2 overlay */
-    .block2-content{position:relative;width:min(900px,92vw);max-height:84vh;display:flex;justify-content:center;align-items:center}
-    .block2-inner{width:100%;background:rgba(255,255,255,.9);border-radius:12px;padding:2.5rem;display:flex;flex-direction:column;justify-content:center;overflow:auto}
-    .grid-2{display:grid;grid-template-columns:repeat(3,1fr);gap:4rem 2rem;width:100%;max-width:900px;margin:0 auto;place-items:center;align-items:start}
-    .cell{border-radius:6px;font-family:'Minion',sans-serif;font-size:.9rem;text-align:justify;width:100%}
-    .cv-link {
-    display: block;       /* prend toute la largeur de la cell */
-    text-align: center;   /* centre le texte */
-    margin-bottom: 1rem;  /* espace en dessous */
-    color: #597ef7;
-    text-decoration: none;
-    text-transform:uppercase;
-    transition: color 0.3s;
-    font:1.3rem 'Megants',sans-serif}
-
-    .cv-link:hover {color: darkblue;text-decoration: underline;}
-
-    /* PDF */
-    .pdf-container{position:relative;width:100%;height:100%;margin:auto;background:#fff}
-
-    /* Portfolio 3D plein écran : fond noir pour enchaîner sans flash blanc
-       sur l'écran d'accueil de la page 3D. */
-    .conteneur3d{background:#000}
-    .iframe3d{width:100%;height:100%;border:0;display:block}
-    .btn-close{position:absolute;top:40px;left:10px;z-index:10;background:red;color:#fff;border:none;border-radius:5px;padding:5px 10px;cursor:pointer}
-
-
-
-    /* ======== RESPONSIVE ======== */
-    @media (min-width:768px){html,body{overflow:hidden}.overlay{overflow:hidden}}
-
-    @media (max-width:1024px) and (min-width:768px){
-      .grid-2{grid-template-columns:repeat(2,1fr);width:100%!important;max-width:100vw!important;gap:1.5rem;margin-top:1.2rem;margin-bottom:1.2rem}
-      .block2-inner{overflow-y:auto!important;padding:2.5rem!important}
-      .titregraphisme{max-width:90%}
-      .graphismedecor {width:15vw}
-      .photonom{width:35%}
-    }
-
-    @media (max-width:767px){
-      html,body{overflow-y:auto}
-      .block {background-color: var(--cream) !important;}
-      .container{grid-template-columns:1fr;grid-template-rows:repeat(3,1fr);grid-template-areas:'block2' 'block1' 'block3'}
-      .block:nth-child(1){grid-area:block1}
-      .block:nth-child(2){grid-area:block2}
-      .block:nth-child(3){grid-area:block3}
-
-    /* Écran d'accueil 3D : consignes tactiles à la place des consignes clavier */
-    .bloc3d{background:#000!important}
-    .accueil3d-desktop{display:none}
-    .accueil3d-mobile{display:block}
-    .accueil3d-titre{font-size:clamp(22px,6vw,34px);max-width:12em}
-    .accueil3d-enter{font-size:clamp(17px,4.2vw,26px)}
-    .accueil3d-ctrl{font-size:clamp(10px,2.6vw,14px);max-width:22em}
-    .accueil3d-note{font-size:clamp(10px,2.4vw,13px)}
-
-    /* Supprimer block4 et block5 en mobile */
-    .block:nth-child(4), .block:nth-child(5) {display: none !important;}
-    .overlay.overlay-block2 {
-    padding: 4vh 10vw; /* plus d'espace cliquable sur les côtés */
-    align-items: flex-start; /* colle le contenu en haut */}
-   .block2-content {
-    height: 100%;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;}
-   .block2-inner {
-    height: 100%;
-    overflow-y: auto; /* scroll interne */
-    -ms-overflow-style: none; /* IE et Edge */
-    scrollbar-width: none;    /* Firefox */
-    padding-top: 1rem !important;}
-   .block2-inner::-webkit-scrollbar {display: none; /* Chrome, Safari, Opera */}
-   .grid-2{grid-template-columns:1fr;gap:1.2rem 0!important;width:100%!important;max-width:100vw!important;margin-top:0}
-   .cell{width:100%!important;max-width:100vw!important;font-size:.9rem!important;display:block!important}
-   .block2-inner{justify-content:flex-start!important;align-items:stretch!important;overflow-y:auto!important;padding:2.5rem!important}
-   .titrephoto-desktop{display:none}
-   .titrephoto-mobile{display:block;width:60vw}
-   .titregraphisme{display:none;}
-   .titregraphisme-mobile{display:block;width:5vw;transform: rotate(90deg);}
-   .graphismedecor {width:30vw; height:auto;}}
+/* Tablette & mobile : une colonne, ordre texte → photographies → backrooms,
+   menu collant en haut qui fait défiler vers chaque partie */
+@media (max-width:1024px){
+  /* pas d'overflow sur body : ça casserait le menu sticky */
+  .menu-mobile{display:flex;position:sticky;top:0;z-index:100;height:var(--nav-h);align-items:center;justify-content:space-around;
+    gap:.5rem;padding:0 .6rem;background:var(--cream);border-bottom:1px solid #bbb;
+    font:.62rem 'Megants',sans-serif;text-transform:uppercase;letter-spacing:.02em}
+  .menu-mobile a{color:#000;text-decoration:none;white-space:nowrap}
+  .container{display:flex;flex-direction:column;height:auto;width:100%}
+  .colonne{padding:4vw 5vw;scroll-margin-top:var(--nav-h)}
+  .colonne-bio{order:1}.colonne-photo{order:2}.colonne-3d{order:3}
+  .block{width:min(100%,78vw)}
+  .bio{max-height:none;overflow:visible;padding:1.5rem .5rem .5rem}
+  .photonom{width:55%}
+  .handle,.dog-icon{display:none}
+  .grid-2{grid-template-columns:1fr;gap:1.2rem 0}
+  .cell{font-size:.9rem}
+  .credits{position:static;padding:3.5rem 0 2rem 5vw}
+}

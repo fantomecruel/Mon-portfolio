@@ -7,13 +7,12 @@ const { createApp, nextTick } = Vue;
 createApp({
   data(){
     return {
-      allowedBlocks: new Set([0,1,2]),
+      allowedBlocks: new Set([0,2]),   // 0 = photographies, 2 = backrooms 3D (le texte est sur la page)
       activeBlock: null,
       overlayStyle: {},
 
       // états d’affichage
       showSlider: false,        // (désormais inutilisé mais conservé)
-      showBlock2Grid: false,
       showPdfContent: false,    // (désormais inutilisé mais conservé)
       showPhotoPdf: false,
       show3d: false,            // iframe du portfolio 3D
@@ -81,7 +80,6 @@ createApp({
 
       // reset des contenus
       this.showSlider = false;
-      this.showBlock2Grid = false;
       this.showPdfContent = false;
       this.showPhotoPdf = false;
       this.show3d = false;
@@ -92,11 +90,6 @@ createApp({
 
       // noir pour la 3D : l'agrandissement enchaîne sans flash clair
       if (index === 2) background = '#000';
-
-      if (index === 1) {
-        background = "url('photos/a.svg') no-repeat center, var(--cream)";
-        backgroundSize = '30% auto, auto';
-      }
 
       this.overlayStyle = {
         top: rect.top + 'px',
@@ -114,7 +107,7 @@ createApp({
             left: '0px',
             width: '100vw',
             height: '100vh',
-            backgroundSize: index === 1 ? 'cover' : 'auto'
+            backgroundSize: 'auto'
           });
 
           const delay = 500;
@@ -122,12 +115,6 @@ createApp({
           if (index === 0) {
             setTimeout(() => { 
               this.showPhotoPdf = true; 
-            }, delay);
-          }
-
-          if (index === 1) {
-            setTimeout(() => { 
-              this.showBlock2Grid = true; 
             }, delay);
           }
 
@@ -148,15 +135,14 @@ createApp({
     },
 
     closeOverlay(){
-      this.showBlock2Grid = false;
       this.showSlider = false;
       this.showPdfContent = false;
       this.showPhotoPdf = false;
       // démonte l'iframe : libère le contexte WebGL et les 16 Mo du monde
       this.show3d = false;
 
-      const { rect, index } = this.activeBlock;
-      const newBgSize = index === 1 ? `${rect.width}px ${rect.height}px` : 'auto';
+      const { rect } = this.activeBlock;
+      const newBgSize = 'auto';
 
       Object.assign(this.overlayStyle, {
         top: rect.top + 'px',
