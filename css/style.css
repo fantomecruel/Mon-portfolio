@@ -1,7 +1,7 @@
 /* =====================================
    Thème & normalisation
 ====================================== */
-:root { --cream:#fffefc; --black:#000; --link:#ff422b; --nav-h:44px; }
+:root { --cream:#fffefc; --black:#000; --link:#ff422b; --nav-h:44px;  color-scheme: only light; }
 * { box-sizing: border-box }
 html { scroll-behavior: smooth }
 html, body { margin:0; padding:0; background:var(--cream); min-height:100vh; cursor:url('../photos/cursor.png') 8 8, auto; }
