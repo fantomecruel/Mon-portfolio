@@ -16,6 +16,7 @@ createApp({
       showPdfContent: false,    // (désormais inutilisé mais conservé)
       showPhotoPdf: false,
       show3d: false,            // iframe du portfolio 3D
+      contact: false,           // formulaire de contact
 
       // anciennes données slider (conservées pour stabilité)
       desktopImages: [
@@ -52,9 +53,68 @@ createApp({
     window.addEventListener('message', (e) => {
       if (e.data === 'fermer-3d' && this.show3d) this.closeOverlay();
     });
+
+    this.initFenetre();
   },
 
   methods:{
+    // Fenêtre « Aurélia Foucher » : déplaçable par sa barre de titre (souris ou doigt),
+    // redimensionnable par le coin bas droit (resize:both en CSS). Le texte se recale seul.
+    initFenetre(){
+      const f = document.querySelector('.fenetre');
+      const barre = f && f.querySelector('.barre');
+      if (!barre) return;
+
+      // On fige la position CSS (en %) en pixels pour pouvoir la déplacer et la redimensionner
+      const figer = () => {
+        const r = f.getBoundingClientRect();
+        Object.assign(f.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px', bottom: 'auto' });
+      };
+      figer();
+
+      const borner = () => {
+        const x = Math.min(Math.max(0, f.offsetLeft), Math.max(0, window.innerWidth  - f.offsetWidth));
+        const y = Math.min(Math.max(0, f.offsetTop),  Math.max(0, window.innerHeight - 40)); // la barre reste attrapable
+        f.style.left = x + 'px'; f.style.top = y + 'px';
+      };
+
+      // Déplacement : on écoute le mouvement sur window (plus fiable que la capture
+      // de pointeur selon les navigateurs), avec repli souris/tactile si besoin.
+      let prise = null;
+      const debut = (x, y) => { prise = { dx: x - f.offsetLeft, dy: y - f.offsetTop }; };
+      const bouge = (x, y) => {
+        if (!prise) return;
+        f.style.left = (x - prise.dx) + 'px';
+        f.style.top  = (y - prise.dy) + 'px';
+        borner();
+      };
+      const lacher = () => { prise = null; };
+
+      if (window.PointerEvent) {
+        barre.addEventListener('pointerdown', (e) => { if (e.button) return; e.preventDefault(); debut(e.clientX, e.clientY); });
+        window.addEventListener('pointermove', (e) => bouge(e.clientX, e.clientY));
+        window.addEventListener('pointerup', lacher);
+        window.addEventListener('pointercancel', lacher);
+      } else {
+        barre.addEventListener('mousedown', (e) => { if (e.button) return; e.preventDefault(); debut(e.clientX, e.clientY); });
+        window.addEventListener('mousemove', (e) => bouge(e.clientX, e.clientY));
+        window.addEventListener('mouseup', lacher);
+        barre.addEventListener('touchstart', (e) => { const t = e.touches[0]; debut(t.clientX, t.clientY); }, { passive: true });
+        window.addEventListener('touchmove', (e) => { if (!prise) return; const t = e.touches[0]; bouge(t.clientX, t.clientY); }, { passive: true });
+        window.addEventListener('touchend', lacher);
+      }
+      window.addEventListener('resize', borner);
+    },
+
+    // Contact : pas de serveur sur ce site, le formulaire prépare un mail dans le logiciel du visiteur
+    envoyer(e){
+      const d = new FormData(e.target);
+      const sujet = encodeURIComponent('Contact portfolio — ' + d.get('nom'));
+      const corps = encodeURIComponent(d.get('message') + '\n\n— ' + d.get('nom') + ' (' + d.get('email') + ')');
+      window.location.href = 'mailto:aurelia.foucher@outlook.com?subject=' + sujet + '&body=' + corps;
+      this.contact = false;
+    },
+
     handleClick(index, evt){
       if(!this.allowedBlocks.has(index)) return;
       this.openOverlay(index, evt);

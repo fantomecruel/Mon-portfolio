@@ -1,52 +1,81 @@
 /* =====================================
    Thème & normalisation
 ====================================== */
-:root { --cream:#fffefc; --black:#000; --link:#ff422b; --nav-h:44px;  color-scheme: only light; }
+:root { --cream:#fffefc; --black:#000; --link:#ff422b; --cyan:#33e6ea; color-scheme: only light; }
 * { box-sizing: border-box }
-html { scroll-behavior: smooth }
-html, body { margin:0; padding:0; background:var(--cream); min-height:100vh; cursor:url('../photos/cursor.png') 8 8, auto; }
+html, body { margin:0; padding:0; background:#1a1a1a; height:100%; overflow:hidden; cursor:url('../photos/cursor.png') 8 8, auto; }
 
 /* Fonts */
 @font-face{font-family:'Megants';src:url('../fonts/Megants.otf') format('opentype')}
 @font-face{font-family:'Minion';src:url('../fonts/MinionProSemiboldDisplay.otf') format('opentype')}
-
-/* =====================================
-   ACCUEIL desktop : 3 colonnes
-   photographies | Aurélia Foucher (texte) | backrooms core
-====================================== */
-.container{display:grid;grid-template-columns:28% 44% 28%;width:100vw;height:100vh;background:var(--cream)}
-.colonne{display:flex;justify-content:center;align-items:center;min-height:0;padding:3vh 2vw}
-
-/* Cartes cliquables : image de fond + SVG centré (l'overlay part du rectangle de la carte) */
-.block{position:relative;display:flex;justify-content:center;align-items:center;overflow:hidden;cursor:pointer;
-  width:min(100%,62vh*1074/1300);aspect-ratio:1074/1300;background:var(--cream) no-repeat center/cover;
-  box-shadow:0 8px 22px rgba(0,0,0,.18);padding-bottom:12% /* centre le titre sur la photo, pas sur le bord bas du polaroid */}
-.bloc-photo{background-image:url('../photos/statuenb.png')}
-.bloc3d{background-image:url('../photos/statuenb2.png')}
-.titrephoto,.titre3d{display:block;width:60%;height:auto;z-index:2;transition:opacity .8s ease-out}
-.titre3d{width:62%}
-.block:hover .titrephoto,.block:hover .titre3d{opacity:.5}
+@font-face{font-family:'SFPro';src:url('../fonts/SF-Pro-Display-Light.otf') format('opentype')}
+@font-face{font-family:'Belvina';src:url('../3d/CSBelvina-Regular_demo-BF669f0fb63ba84.otf') format('opentype')}
 
 /* Titres invisibles (SEO) */
 .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
-/* Colonne centrale : nom + texte de présentation */
-.bio{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#000;
-  width:100%;max-height:100%;overflow-y:auto;padding:1vh 1vw}
-.photonom{width:34%;max-width:260px;display:block}
-.handle{font:.75rem 'Minion',serif;color:#2d2929;margin:.45rem 0 .6rem}
-.dog-icon{width:30px;margin:1.6rem 0 2.4rem;transition:transform 1s ease-in-out}
-.dog-icon:hover{transform:scale(1.1) rotate(180deg);transition-duration:.5s}
-.grid-2{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem 1.6rem;width:100%;align-items:start}
-.cell{font-family:'Minion',serif;font-size:clamp(.66rem,.8vw,.9rem);line-height:1.35;text-align:justify;hyphens:auto}
-.cv-link{display:block;text-align:center;margin-bottom:1rem;color:var(--link);text-decoration:none;text-transform:uppercase;transition:color .3s;font:1.3rem 'Megants',sans-serif}
-.cv-link:hover{color:darkblue;text-decoration:underline}
+/* =====================================
+   ACCUEIL : fond + 3 éléments posés dessus
+====================================== */
+.fond{position:fixed;inset:0;z-index:0;background:#1a1a1a url('../photos/fondecransite.png') no-repeat center/cover}
+.scene{position:relative;z-index:1;width:100%;height:100vh;height:100dvh}
 
-/* Crédits : fixés en bas sur desktop (page sans défilement) */
-.credits{position:fixed;left:14px;bottom:10px;text-align:left;font:.6rem 'Minion',serif;color:#8a8a8a;letter-spacing:.06em;pointer-events:none}
+/* Dossier photographies (en haut à droite) */
+.dossier{position:absolute;left:77%;top:14%;width:4.6vw;min-width:56px;display:flex;flex-direction:column;align-items:center;
+  text-decoration:none;color:#fff;font:.72rem system-ui,-apple-system,'Helvetica Neue',sans-serif;transition:transform .3s}
+.dossier img{width:100%;height:auto;display:block;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.dossier-nom{margin-top:.3rem;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.dossier:hover{transform:scale(1.06)}
 
-/* Menu mobile : caché sur desktop */
-.menu-mobile{display:none}
+/* Lien central Backrooms Core : cadre de sélection + textes surlignés */
+.lien3d{white-space:nowrap;position:absolute;left:45%;top:52%;transform:translate(-50%,-50%);padding:.7rem 3.2rem .9rem;
+  display:flex;flex-direction:column;align-items:center;gap:.25rem;text-decoration:none;font-family:'Megants',sans-serif;text-transform:uppercase}
+.surligne{display:inline-block;padding:.08em .35em;line-height:1.05;transition:filter .3s}
+.titre{font-family:'Belvina','Megants',sans-serif;font-size:clamp(1rem,1.45vw,1.45rem);color:#151515;background:rgba(190,190,190,.6)}
+.cliquez{font-family:'Belvina','Megants',sans-serif;font-size:clamp(1rem,1.45vw,1.45rem);color:var(--cyan);background:rgba(40,40,40,.85)}
+.lien3d:hover .surligne{filter:brightness(1.25)}
+/* cadre pointillé + 8 poignées carrées (4 coins + 4 milieux) */
+.cadre{position:absolute;inset:0;border:1px dashed rgba(230,230,230,.85);pointer-events:none}
+.cadre i{position:absolute;width:9px;height:9px;background:#f4f4f4;border:1px solid #444;transform:translate(-50%,-50%)}
+.cadre i:nth-child(1){left:0;top:0}      .cadre i:nth-child(2){left:50%;top:0}   .cadre i:nth-child(3){left:100%;top:0}
+.cadre i:nth-child(4){left:0;top:50%}    .cadre i:nth-child(5){left:100%;top:50%}
+.cadre i:nth-child(6){left:0;top:100%}   .cadre i:nth-child(7){left:50%;top:100%} .cadre i:nth-child(8){left:100%;top:100%}
+
+/* Fenêtre façon mac : barre de titre + contenu qui défile */
+.fenetre{z-index:3;position:absolute;left:14%;width:60%;top:66%;bottom:2.5vh;display:flex;flex-direction:column;overflow:hidden;
+  resize:both;min-width:240px;min-height:110px;max-width:100vw;max-height:100vh;
+  background:rgba(22,22,22,.72);border:1px solid rgba(255,255,255,.12);border-radius:9px;
+  box-shadow:0 12px 40px rgba(0,0,0,.5);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.barre{flex:0 0 36px;position:relative;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;display:flex;align-items:center;justify-content:center;background:rgba(60,60,60,.55);border-bottom:1px solid rgba(0,0,0,.4)}
+.feux{position:absolute;left:12px;display:flex;gap:7px}
+.feux i{width:11px;height:11px;border-radius:50%;background:#6a6a6a}
+.onglet{margin:0;width:40%;min-width:180px;padding:.25rem 0;border-radius:5px;background:rgba(90,90,90,.55);
+  font:.8rem 'Minion',serif;font-weight:normal;color:#ddd;text-align:center;letter-spacing:.03em}
+.barre:active{cursor:grabbing}
+.contenu{flex:1;overflow-y:auto;padding:1.2rem 3rem 1.6rem;color:#fff;font-family:'SFPro','Helvetica Neue',sans-serif;
+  font-size:clamp(.72rem,.85vw,.95rem);line-height:1.4;text-align:justify;hyphens:auto;
+  scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.35) transparent}
+.contenu::-webkit-scrollbar{width:8px}
+.contenu::-webkit-scrollbar-thumb{background:rgba(255,255,255,.35);border-radius:4px}
+.contenu p{margin:0 0 .9rem}
+.cv-link{display:block;text-align:center;margin:.2rem 0 1rem;color:var(--link);text-decoration:none;text-transform:uppercase;transition:color .3s;font:1.3rem 'Megants',sans-serif}
+.cv-link:hover{color:var(--cyan);text-decoration:underline}
+
+/* Crédits : fixés en bas à gauche */
+.credits{position:fixed;left:14px;bottom:8px;z-index:2;font:.7rem 'SFPro','Helvetica Neue',sans-serif;color:#fff;letter-spacing:.03em}
+.credits a{color:#fff;text-decoration:underline}.credits a:hover{color:var(--cyan)}
+.lien-mail{color:#fff;text-decoration:underline}.lien-mail:hover{color:var(--cyan)}
+
+/* Formulaire de contact */
+.contact-fond{position:fixed;inset:0;z-index:1100;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.contact{position:relative;width:min(100%,420px);padding:1.6rem 1.6rem 1.4rem;background:#1e1e1e;color:#eee;border:1px solid rgba(255,255,255,.14);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.6);font-family:'SFPro','Helvetica Neue',sans-serif}
+.contact h2{margin:0 0 1rem;font:1.3rem 'Belvina','Megants',sans-serif;text-transform:uppercase;text-align:center;letter-spacing:.04em}
+.contact label{display:block;margin-bottom:.8rem;font-size:.8rem;color:#bbb}
+.contact input,.contact textarea{display:block;width:100%;margin-top:.25rem;padding:.5rem .6rem;background:#111;color:#fff;border:1px solid #444;border-radius:5px;font:.9rem 'SFPro','Helvetica Neue',sans-serif;resize:vertical}
+.contact input:focus,.contact textarea:focus{outline:none;border-color:var(--cyan)}
+.contact button[type=submit]{display:block;margin:.4rem auto 0;padding:.5rem 1.6rem;background:var(--link);color:#fff;border:0;border-radius:5px;font:1rem 'Megants',sans-serif;text-transform:uppercase;cursor:pointer}
+.contact button[type=submit]:hover{background:var(--cyan);color:#111}
+.contact-fermer{position:absolute;top:6px;right:10px;background:none;border:0;color:#aaa;font-size:1.5rem;cursor:pointer}.contact-fermer:hover{color:#fff}
 
 /* =====================================
    OVERLAY (photographies PDF / portfolio 3D)
@@ -60,26 +89,14 @@ html, body { margin:0; padding:0; background:var(--cream); min-height:100vh; cur
 .btn-onglet{position:absolute;right:12px;top:40px;z-index:11;font:14px/1.2 sans-serif;background:#000;color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none}
 
 /* =====================================
-   RESPONSIVE
+   RESPONSIVE : tablette & mobile (même composition, en portrait)
 ====================================== */
-@media (min-width:1025px){html,body{overflow:hidden}}
-
-/* Tablette & mobile : une colonne, ordre texte → photographies → backrooms,
-   menu collant en haut qui fait défiler vers chaque partie */
 @media (max-width:1024px){
-  /* pas d'overflow sur body : ça casserait le menu sticky */
-  .menu-mobile{display:flex;position:sticky;top:0;z-index:100;height:var(--nav-h);align-items:center;justify-content:space-around;
-    gap:.5rem;padding:0 .6rem;background:var(--cream);border-bottom:1px solid #bbb;
-    font:.62rem 'Megants',sans-serif;text-transform:uppercase;letter-spacing:.02em}
-  .menu-mobile a{color:#000;text-decoration:none;white-space:nowrap}
-  .container{display:flex;flex-direction:column;height:auto;width:100%}
-  .colonne{padding:4vw 5vw;scroll-margin-top:var(--nav-h)}
-  .colonne-bio{order:1}.colonne-photo{order:2}.colonne-3d{order:3}
-  .block{width:min(100%,78vw)}
-  .bio{max-height:none;overflow:visible;padding:1.5rem .5rem .5rem}
-  .photonom{width:55%}
-  .handle,.dog-icon{display:none}
-  .grid-2{grid-template-columns:1fr;gap:1.2rem 0}
-  .cell{font-size:.9rem}
-  .credits{position:static;padding:3.5rem 0 2rem 5vw}
+  .dossier{left:auto;right:8%;top:15%}
+  .lien3d{left:50%;top:54%;padding:.6rem 2rem .7rem}
+  .fenetre{left:6%;width:88%;top:64%;bottom:2vh}
+  .onglet{width:40%;min-width:120px;font-size:.75rem}
+  .contenu{padding:1rem 1.2rem 1.4rem;font-size:.86rem}
+  .credits{left:6%;bottom:4px;font-size:.75rem}
+  .contenu{font-family:'SFPro','Helvetica Neue',sans-serif}
 }

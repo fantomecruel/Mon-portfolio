@@ -8,79 +8,66 @@
   <meta name="color-scheme" content="only light" />
   <title>Aurélia Foucher</title>
   <link rel="icon" href="photos/favicon.ico" type="image/x-icon" />
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=4">
   <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.js"></script>
-  <script defer src="js/app.js"></script>
+  <script defer src="js/app.js?v=3"></script>
 </head>
 
 <body>
   <div id="app">
-    <!-- Menu mobile : ancres vers les trois parties (masqué sur desktop) -->
-    <nav class="menu-mobile">
-      <a href="#photographies">Photographies</a>
-      <a href="#backrooms">Backrooms Core Portfolio 3D</a>
-      <a href="#cv">CV</a>
-    </nav>
+    <!-- Fond : rendu Blender (fondecransite.png) -->
+    <div class="fond"></div>
 
-    <div class="container">
-      <!--
-       
-        .--'''''''''--.
-     .'      .---.      '.
-    /    .-----------.    \
-   /        .-----.        \
-   |       .-.   .-.       |
-   |      /   \ /   \      |
-    \    | .-. | .-. |    /
-     '-._| | | | | | |_.-'
-         | '-' | '-' |
-          \___/ \___/
-       _.-'  /   \  `-._
-     .' _.--|     |--._ '.
-     ' _...-|     |-..._ '
-            |     |
-            '.___.'
-              | |
-             _| |_
-            /\( )/\
-SOS
--->
+    <main class="scene">
+      <!-- Dossier « photographies » (cliquable → overlay PDF) -->
+      <a class="dossier" href="#" @click.prevent="handleClick(0, $event)">
+        <h2 class="sr-only">Photographies</h2>
+        <img src="photos/dossiermac.png" alt="" />
+        <span class="dossier-nom">photographies</span>
+      </a>
 
-      <!-- Colonne 1 : Photographies (cliquable → overlay PDF) -->
-      <div class="colonne colonne-photo" id="photographies">
-        <div class="block bloc-photo" @click="handleClick(0, $event)">
-          <h2 class="sr-only">Photographies</h2>
-          <img class="titrephoto" src="photos/photographiebelvina.svg" alt="Photographie" />
+      <!-- Lien central : Backrooms Core (cliquable → overlay 3d/index.html) -->
+      <a class="lien3d" href="#" @click.prevent="handleClick(2, $event)">
+        <h2 class="sr-only">Backrooms Core — Portfolio 3D</h2>
+        <span class="cadre"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="surligne titre">Backrooms Core</span>
+        <span class="surligne cliquez">Cliquez ici</span>
+      </a>
+
+      <!-- Fenêtre « Aurélia Foucher » : présentation + CV -->
+      <section class="fenetre" id="cv">
+        <div class="barre">
+          <span class="feux"><i></i><i></i><i></i></span>
+          <h1 class="onglet">Aurélia Foucher</h1>
         </div>
-      </div>
+        <div class="contenu">
+          <a href="photos/cvaureliafoucher.pdf" target="_blank" class="cv-link"> → CV ← </a>
+         <p>Je m'appelle Aurélia, je travaille comme assistante graphiste et 3e assistante déco. Diplômée des Beaux-Arts de Montpellier, artiste plasticienne et photographe.
 
-      <!-- Colonne 2 : Aurélia Foucher -->
-      <div class="colonne colonne-bio" id="cv">
-        <div class="bio">
-          <h1 class="sr-only">Aurélia Foucher</h1>
-          <img class="photonom" src="photos/titreaurelia.svg" alt="Aurélia Foucher" />
-          <img class="dog-icon" src="photos/pictodogshadow.svg" alt="Icône Dog" />
-          <div class="grid-2">
-            <div class="cell"><a href="photos/cvaureliafoucher.pdf" target="_blank" class="cv-link"> → CV ← </a>Ce portfolio que j’ai développé est un aperçu de mon univers artistique et professionnel. 
-            Diplômée des Beaux-Arts de Montpellier, j’ai passé la majeure partie de ma carrière professionnelle en tant qu’artiste plasticienne et photographe. <br><br>Tout au long de mon parcours, j’ai été fascinée par le monde du virtuel, de l’immersif, et en particulier par la réalité virtuelle et j’ai décidé de faire une formation en développement web de 7 mois en 2023, voyant ce domaine comme une extension naturelle de ma passion pour l’art visuel. <br> Pour moi, l’apprentissage des langages informatiques était un pas indispensable pour intégrer le numérique à mes projets artistiques.</div>
-            <div class="cell">La partie Photographies de ce portfolio est une petite sélection (issue de différentes séries)  de  mon  travail  réalisé à la chambre photographique 5x7’’ ou au polaroïd. <br>J’expérimente la photographie argentique depuis 2015. J'aborde chaque image comme un espace à construire, proche du plan cinématographique, où l'intime devient un terrain d'observation plutôt qu'un récit personnel
-            Je travaille en ce moment à l’écriture d’un court-métrage que j’aimerais réaliser, qui tourne autour de la démultiplication de soi, des figures qui se répètent, se dédoublent, s'imitent, se font face. <br><br> J’ai toujours évolué autour du milieu du cinéma pendant mes études  notamment grâce à mes recontres avec des étudiant.e.s de l’ENSAV de Toulouse. J’ai participé à de nombreux courts-métrages et clips en tant que technicienne et j’ai beaucoup hésité à poursuivre des études dans ce domaine.</div>
-            <div class="cell">J'ai travaillé sur 2 long-métrages  «La mer au loin» de Saïd Hamich fin 2023 et "Une famille de Bâtards" de Mourad Winter en 2025. <br>Ces premières expériences en tant qu’assistante graphiste et 3e assistante déco m’ont vraiment donné envie de continuer,  et c’est pour ça que j’ai suivi une formation infographiste quelques mois après, afin de me perfectionner dans la suite Adobe et viser le métier de graphiste de décoration de cinéma, en parallèle de mon activité artistique personnelle. <br><br> Dans la partie Backrooms Core, j'ai réalisé un environnement inspiré de l'univers des backrooms, dans lequel se trouve des fragments et références aux lieux, objets et personnes qui peuplent mes obessions, mes passions et mes souvenirs. Cette partie est encore en construction, j'aimerais qu'elle soit interactive. 
-            </div>
-          </div>
-        </div>
-      </div>
+J'ai travaillé sur deux longs métrages, [titre] en 2023 et [titre] en 2025, après de nombreux courts-métrages et clips comme technicienne. J'ai suivi une formation d'infographiste pour viser le graphisme de décoration de cinéma, et une formation en développement en 2023.<br><br>
 
-      <!-- Colonne 3 : Backrooms Core / Portfolio 3D (cliquable → overlay 3d/index.html) -->
-      <div class="colonne colonne-3d" id="backrooms">
-        <div class="block bloc3d" @click="handleClick(2, $event)">
-          <h2 class="sr-only">Backrooms Core — Portfolio 3D</h2>
-          <img class="titre3d" src="photos/backroomscore.svg" alt="Backrooms Core, portfolio 3D" />
-        </div>
-      </div>
+Dans la partie photographies se trouve une sélection de mon travail à la chambre 5x7" et au polaroïd. Je pratique l'argentique depuis 2015. J'aborde chaque image comme un espace à construire, proche du plan cinématographique, où l'intime devient un terrain d'observation plutôt qu'un récit personnel.<br><br>
+
+Dans la partie Backrooms core, j'ai modélisé un environnement inspiré de l'univers des backrooms, peuplé de fragments et de références aux lieux, aux objets et aux personnes qui traversent mes obsessions et mes souvenirs.<br><br>
+
+En ce moment, j'écris un court-métrage autour de la démultiplication de soi, des figures qui se répètent, se dédoublent, s'imitent, se font face. N'hésitez pas à m'écrire : <a href="#" class="lien-mail" @click.prevent="contact=true">aurelia.foucher@outlook.com</a></p>
+    
+      </section>
+    </main>
+
+    <footer class="credits">© 2026 <a href="https://github.com/fantomecruel" target="_blank" rel="noopener">@fantomecruel</a> &nbsp;·&nbsp; <a href="#" @click.prevent="contact=true">Email</a> &nbsp;·&nbsp; <a href="https://www.instagram.com/aurasan_vn/" target="_blank" rel="noopener">Instagram</a></footer>
+
+    <!-- Formulaire de contact (ouvre le logiciel de mail avec le message pré-rempli) -->
+    <div v-if="contact" class="contact-fond" @click.self="contact=false">
+      <form class="contact" @submit.prevent="envoyer">
+        <button type="button" class="contact-fermer" @click="contact=false" aria-label="Fermer">×</button>
+        <h2>Contact</h2>
+        <label>Nom <input name="nom" type="text" required autocomplete="name"></label>
+        <label>Email <input name="email" type="email" required autocomplete="email"></label>
+        <label>Message <textarea name="message" rows="6" required></textarea></label>
+        <button type="submit">Envoyer</button>
+      </form>
     </div>
-
-    <footer class="credits">© 2026 @fantomecruel</footer>
 
     <!-- OVERLAY -->
     <div v-if="activeBlock" class="overlay" :style="overlayStyle" @click.self="closeOverlay">
