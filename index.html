@@ -35,18 +35,18 @@
               SOS 
 -->
   <div id="app">
-    <!-- Fond : rendu Blender (fondecransite.png) -->
+    <!-- Fond (fondecransite.png) -->
     <div class="fond"></div>
 
     <main class="scene">
-      <!-- Dossier « photographies » (cliquable → overlay PDF) -->
+      <!-- Dossier « photographies » -->
       <a class="dossier" href="#" @click.prevent="handleClick(0, $event)">
         <h2 class="sr-only">Photographies</h2>
         <img src="photos/dossiermac.png" alt="" />
         <span class="dossier-nom">photographies</span>
       </a>
 
-      <!-- Lien central : Backrooms Core (cliquable → overlay 3d/index.html) -->
+      <!-- Backrooms Core -->
       <a class="lien3d" href="#" @click.prevent="handleClick(2, $event)">
         <h2 class="sr-only">Backrooms Core — Portfolio 3D</h2>
         <span class="cadre"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
@@ -54,7 +54,7 @@
         <span class="surligne cliquez">Cliquez ici</span>
       </a>
 
-      <!-- Fenêtre « Aurélia Foucher » : présentation + CV -->
+      <!-- Fenêtre « Aurélia Foucher » présentation + CV -->
       <section class="fenetre" id="cv">
         <div class="barre">
           <span class="feux"><i></i><i></i><i></i></span>
@@ -62,8 +62,7 @@
         </div>
         <div class="contenu">
           <a href="photos/cvaureliafoucher.pdf" target="_blank" class="cv-link"> → CV ← </a>
-         <p>Je m'appelle Aurélia, je travaille comme assistante graphiste et 3e assistante déco. Diplômée des Beaux-Arts de Montpellier, artiste plasticienne et photographe.
-
+         <p>Je m'appelle Aurélia, je suis artiste plasticienne et photographe depuis 2015. Je travaille aussi comme assistante graphiste et 3e assistante déco. 
 J'ai travaillé sur deux longs métrages, "La mer au loin" de Saïd Hamich en 2023 et "Une famille de bâtards" de Mourad Winter en 2025, après de nombreux courts-métrages et clips comme technicienne. J'ai suivi une formation d'infographiste pour viser le graphisme de décoration de cinéma, et une formation en développement web en 2023, et j'ai décidé de développer ce portfolio.<br><br>
 
 Dans la partie photographies se trouve une sélection de mon travail à la chambre 5x7" et au polaroïd. J'aborde chaque image comme un espace proche du plan cinématographique, où l'intime devient un terrain d'observation plutôt qu'un récit personnel.<br><br>
